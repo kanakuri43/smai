@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="Split.Views.Dashboard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid Margin="10" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <ListBox Grid.Column="0">
+                <ListBoxItem Content="ネット システム" IsSelected="True"/>
+                <ListBoxItem Content="シャープ事務機" IsSelected="True"/>
+                <ListBoxItem Content="エコール" IsSelected="True"/>
+            </ListBox>
+
+            <ListBox Grid.Column="1">
+                <ListBoxItem Content="菅野完嗣" />
+                <ListBoxItem Content="元木敏" />
+                <ListBoxItem Content="菅原祐之" />
+
+            </ListBox>
+
+        </Grid>
+        <Grid Grid.Row="1">
+            <DatePicker Width="200"                         
+                        HorizontalAlignment="Left"/>
+        </Grid>
+        <Grid Grid.Row="2">
+            <TabControl>
+                <TabItem Header="売上">
+
+                </TabItem>
+                <TabItem Header="粗利">
+
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</UserControl>

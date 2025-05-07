@@ -1,0 +1,17 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<Configuration>
+  <Database>
+    <ConnectionString>Data Source=172.16.3.171;Initial Catalog=katekero_db;User ID=sa;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
+	<!-- <ConnectionString>Data Source=192.168.140.128;Initial Catalog=katekero_db;User ID=sa;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>-->
+
+  </Database>
+	
+	<Kintone>
+		<BaseUrl>https://vk5k755s9nir.cybozu.com/k/v1/</BaseUrl>
+		<AppId>203</AppId>
+		<ApiToken>clYsh32YLyQryGcHH8t4F8hkyIhOuEL67YBuyuvU</ApiToken>
+		<BasicPassword>YS1uaXNoaXp1a2ExMzU1OjEzNTVuaXNoaS5Rd2Vy</BasicPassword>
+	</Kintone>
+	
+</Configuration>
+
