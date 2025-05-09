@@ -2,43 +2,66 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"             
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid Margin="10" Background="White">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0">
-                <ListBoxItem Content="ネット システム" IsSelected="True"/>
-                <ListBoxItem Content="シャープ事務機" IsSelected="True"/>
-                <ListBoxItem Content="エコール" IsSelected="True"/>
-            </ListBox>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0"
+                            Margin="0,0,0,0"
+                            Orientation="Horizontal">
+                <ComboBox Width="90">
+                    <ComboBoxItem Content="2024" />
+                    <ComboBoxItem Content="2025" IsSelected="True"/>
+                    <ComboBoxItem Content="2026" />
+                </ComboBox>
+                <ComboBox Width="50">
+                    <ComboBoxItem Content="1" />
+                    <ComboBoxItem Content="2" />
+                    <ComboBoxItem Content="3" />
+                    <ComboBoxItem Content="4" />
+                    <ComboBoxItem Content="5" IsSelected="True"/>
+                </ComboBox>
+            </StackPanel>
+            <ComboBox Grid.Row="1"
+                      Margin="0,0,0,4">
+                <ComboBoxItem Content="ネット システム" IsSelected="True"/>
+                <ComboBoxItem Content="シャープ事務機"/>
+                <ComboBoxItem Content="エコール"/>
+            </ComboBox>
 
-            <ListBox Grid.Column="1">
-                <ListBoxItem Content="菅野完嗣" />
+            <ListBox Grid.Row="2">
+                <ListBoxItem Content="菅野完嗣"  IsSelected="True"/>
                 <ListBoxItem Content="元木敏" />
                 <ListBoxItem Content="菅原祐之" />
 
             </ListBox>
 
         </Grid>
-        <Grid Grid.Row="1">
-            <DatePicker Width="200"                         
-                        HorizontalAlignment="Left"/>
-        </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Column="1">
             <TabControl>
                 <TabItem Header="売上">
-
+                    <DataGrid ItemsSource="{Binding ResultCollectionView}"
+                              AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="売上実績" Binding="{Binding DecisionSale}" />
+                            <DataGridTextColumn Header="売上見込1" Binding="{Binding EstimateSale1}" />
+                            <DataGridTextColumn Header="売上見込2" Binding="{Binding EstimateSale2}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </TabItem>
                 <TabItem Header="粗利">
+                    <DataGrid>
 
+                    </DataGrid>
                 </TabItem>
             </TabControl>
         </Grid>

@@ -6,17 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
+using Split.Models;
 
 namespace sale.Models
 {
     public class AppDbContext : DbContext
     {
+        public DbSet<WeeklyProgress> WeeklyProgresses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var config = LoadConfig();
             string connectionString = (config.ConnectionString).ToString();
             optionsBuilder.UseSqlServer(connectionString);
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<WeeklyProgress>()
+                .HasKey(wp => new { wp.Date, wp.EmployeeCode, wp.ProgressType });
         }
 
         static dynamic LoadConfig()

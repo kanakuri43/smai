@@ -6,7 +6,7 @@
         ResizeMode="CanMinimize"
         prism:ViewModelLocator.AutoWireViewModel="True"
         WindowTransitionsEnabled="False"
-        Title="{Binding Title}" Height="900" Width="600" >
+        Title="{Binding Title}" Height="600" Width="900" >
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
     </Grid>
