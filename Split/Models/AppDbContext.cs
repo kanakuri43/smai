@@ -12,7 +12,7 @@ namespace sale.Models
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<WeeklyProgress> WeeklyProgresses { get; set; }
+        public DbSet<WeeklyProgress> WeeklySalesProgresses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -23,7 +23,9 @@ namespace sale.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<WeeklyProgress>()
-                .HasKey(wp => new { wp.Date, wp.EmployeeCode, wp.ProgressType });
+                  .ToTable("S進捗")
+                  .HasKey(wp => new { wp.Date, wp.EmployeeCode, wp.ProgressType });
+
         }
 
         static dynamic LoadConfig()

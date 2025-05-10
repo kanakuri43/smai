@@ -20,17 +20,24 @@ namespace Split.Models
         public int EmployeeCode { get; set; }
 
         [Column("売上実績")]
-        public decimal DecisionSale { get; set; }
+        public decimal SalesResult { get; set; }
 
         [Column("売上見込1")]
-        public decimal EstimateSale1 { get; set; }
+        public decimal SalesEstimate1 { get; set; }
 
         [Column("売上見込2")]
-        public decimal EstimateSale2 { get; set; }
+        public decimal SalesEstimate2 { get; set; }
 
+        [Column("粗利実績")]
+        public decimal ProfitResult { get; set; }
+
+        [Column("粗利見込1")]
+        public decimal ProfitEstimate1 { get; set; }
+
+        [Column("粗利見込2")]
+        public decimal ProfitEstimate2 { get; set; }
         [Column("進捗区分")]
         public byte ProgressType { get; set; }
-
 
     }
 }

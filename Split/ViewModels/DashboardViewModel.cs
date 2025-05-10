@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Split.ViewModels
 {
@@ -56,21 +57,25 @@ namespace Split.ViewModels
 
             using (var context = new AppDbContext())
             {
-                // 例: 特定の年と月のデータを取得する
-                int employeeCode = 8911;
+                
+                int employeeCode = 239;
 
-                var weeklyProgressData = context.Set<WeeklyProgress>()
+                // 売上・粗利
+                var weeklyProgress = context.Set<WeeklyProgress>()
                     .Where(wp => wp.EmployeeCode == employeeCode && wp.YearMonth == 202504)
                     .Select(wp => new WeeklyProgress
                     {
-                        Date = wp.Date,
-                        DecisionSale = wp.DecisionSale,
-                        EstimateSale1 = wp.EstimateSale1,
-                        EstimateSale2 = wp.EstimateSale2
+                        Date = (wp.Date % 100),
+                        SalesResult = wp.SalesResult,
+                        SalesEstimate1 = wp.SalesEstimate1,
+                        SalesEstimate2 = wp.SalesEstimate2,
+                        ProfitResult = wp.ProfitResult,
+                        ProfitEstimate1 = wp.ProfitEstimate1,
+                        ProfitEstimate2 = wp.ProfitEstimate2
                     })
                     .ToList();
+                ResultCollectionView = new ListCollectionView(new ObservableCollection<WeeklyProgress>(weeklyProgress));
 
-                ResultCollectionView = new ListCollectionView(new ObservableCollection<WeeklyProgress>(weeklyProgressData));
             }
         }
 
