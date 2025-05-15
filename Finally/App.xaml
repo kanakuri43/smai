@@ -1,7 +1,7 @@
-﻿<prism:PrismApplication x:Class="Split.App"
+﻿<prism:PrismApplication x:Class="Finally.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Split"
+             xmlns:local="clr-namespace:Finally"
              xmlns:prism="http://prismlibrary.com/" >
     <Application.Resources>
         <ResourceDictionary>
@@ -10,7 +10,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <!-- Theme setting -->
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Mauve.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Olive.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

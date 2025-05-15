@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="Finally.Views.Dashboard"
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid Margin="8" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition />
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0"
+                            Margin="0,0,0,0"
+                            Orientation="Horizontal">
+                <ComboBox Width="90">
+                    <ComboBoxItem Content="2024" />
+                    <ComboBoxItem Content="2025" IsSelected="True"/>
+                    <ComboBoxItem Content="2026" />
+                </ComboBox>
+                <ComboBox Width="50"
+                          ItemsSource="{Binding Months}"
+                          SelectedValue="{Binding SelectedMonth}">
+                </ComboBox>
+            </StackPanel>
+            <ComboBox Grid.Row="1"
+                      Margin="0,0,0,4">
+                <ComboBoxItem Content="ネット システム" IsSelected="True"/>
+                <ComboBoxItem Content="シャープ事務機"/>
+                <ComboBoxItem Content="エコール"/>
+            </ComboBox>
+
+            <ListBox Grid.Row="2">
+                <ListBoxItem Content="菅野完嗣"  IsSelected="True"/>
+                <ListBoxItem Content="元木敏" />
+                <ListBoxItem Content="菅原祐之" />
+
+            </ListBox>
+        </Grid>
+
+    </Grid>
+</UserControl>

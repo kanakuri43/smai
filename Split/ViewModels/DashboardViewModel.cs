@@ -1,14 +1,14 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
-using sale.Models;
+using Split.Models;
 using Split.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Windows.Media;
 
 namespace Split.ViewModels
 {
@@ -16,13 +16,42 @@ namespace Split.ViewModels
     {
         private readonly IRegionManager _regionManager;
 
+        private ObservableCollection<int> _years;
         private int _selectedYear;
+        private ObservableCollection<int> _months;
         private int _selectedMonth;
-        private int _selectedSectionCode;
-        private int _selectedEmployeeCode;
+
+        private ObservableCollection<Section> _sections;
+        private Section _selectedSection;
+        private ObservableCollection<Employee> _employees;
+        private Employee _selectedEmployee;
+
+        private decimal _currentSalesTarget;
+        private decimal _currentProfitTarget;
+
         private CollectionView _resultCollectionView;
 
 
+        public ObservableCollection<int> Months
+        {
+            get { return _months; }
+            set { SetProperty(ref _months, value); }
+        }
+        public ObservableCollection<int> Years
+        {
+            get { return _years; }
+            set { SetProperty(ref _years, value); }
+        }
+        public ObservableCollection<Section> Sections
+        {
+            get { return _sections; }
+            set { SetProperty(ref _sections, value); }
+        }
+        public ObservableCollection<Employee> Employees
+        {
+            get { return _employees; }
+            set { SetProperty(ref _employees, value); }
+        }
         public int SelectedYear
         {
             get { return _selectedYear; }
@@ -34,35 +63,92 @@ namespace Split.ViewModels
             set { SetProperty(ref _selectedMonth, value); }
         }
 
-        public int SelectedSectionCode
+        public Section SelectedSection
         {
-            get { return _selectedSectionCode; }
-            set { SetProperty(ref _selectedSectionCode, value); }
+            get { return _selectedSection; }
+            set { SetProperty(ref _selectedSection, value); }
         }
 
-        public int SelectedEmployeeCode
+        public Employee SelectedEmployee
         {
-            get { return _selectedEmployeeCode; }
-            set { SetProperty(ref _selectedEmployeeCode, value); }
+            get { return _selectedEmployee; }
+            set { SetProperty(ref _selectedEmployee, value); }
         }
+
+        public decimal CurrentSalesTarget
+        {
+            get { return _currentSalesTarget; }
+            set { SetProperty(ref _currentSalesTarget, value); }
+        }
+        public decimal CurrentProfitTarget
+        {
+            get { return _currentProfitTarget; }
+            set { SetProperty(ref _currentProfitTarget, value); }
+        }
+
+
         public CollectionView ResultCollectionView
         {
             get { return _resultCollectionView; }
             set { SetProperty(ref _resultCollectionView, value); }
         }
 
+        public DelegateCommand YearSelectionChanged { get; }
+        public DelegateCommand MonthSelectionChanged { get; }
+        public DelegateCommand SectionSelectionChanged { get; }
+        public DelegateCommand EmployeeSelectionChanged { get; }
+
         public DashboardViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
+            YearSelectionChanged = new DelegateCommand(YearSelectionChangedExecute);
+            MonthSelectionChanged = new DelegateCommand(MonthSelectionChangedExecute);
+            SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
+            EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
 
+            // 年リスト
+            int currentYear = DateTime.Now.Year;
+            Years = new ObservableCollection<int>(Enumerable.Range(currentYear - 1, 3));
+            this.SelectedYear = currentYear;
+
+            // 月リスト
+            Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
+            this.SelectedMonth = DateTime.Now.Month;
+
+            // 部署リスト
             using (var context = new AppDbContext())
             {
-                
-                int employeeCode = 239;
+                Sections = new ObservableCollection<Section>(
+                            context.Sections.Where(s => s.State == 0).ToList()
+                        );
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+            }
+
+            // 社員リスト
+            FetchEmployeeList();
+            this.SelectedEmployee = Employees.FirstOrDefault(e => e.Code == 253);
+
+            this.CurrentSalesTarget = 123456;
+            this.CurrentProfitTarget = 12;
+
+            FetchResults();
+        }
+
+        private void FetchResults()
+        {
+            using (var context = new AppDbContext())
+            {
+
+                if (this.SelectedEmployee == null)
+                {
+                    // SelectedEmployeeがnullの場合、ResultCollectionViewを空にする
+                    ResultCollectionView = new ListCollectionView(new ObservableCollection<WeeklyProgress>());
+                    return;
+                }
 
                 // 売上・粗利
                 var weeklyProgress = context.Set<WeeklyProgress>()
-                    .Where(wp => wp.EmployeeCode == employeeCode && wp.YearMonth == 202504)
+                    .Where(wp => wp.EmployeeCode == this.SelectedEmployee.Code && wp.YearMonth == (this.SelectedYear * 100 + this.SelectedMonth))
                     .Select(wp => new WeeklyProgress
                     {
                         Date = (wp.Date % 100),
@@ -78,7 +164,34 @@ namespace Split.ViewModels
 
             }
         }
+        private void FetchEmployeeList()
+        {
 
+            using (var context = new AppDbContext())
+            {
+                Employees = new ObservableCollection<Employee>(
+                    context.Employees
+                        .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                        .ToList()
+                );
+            }
+        }
+        private void YearSelectionChangedExecute()
+        {
+            FetchResults();
+        }
+        private void MonthSelectionChangedExecute()
+        {
+            FetchResults();
+        }
+        private void SectionSelectionChangedExecute()
+        {
+            FetchEmployeeList();
+        }
+        private void EmployeeSelectionChangedExecute()
+        {
+            FetchResults();
+        }
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true;
