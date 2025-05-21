@@ -39,6 +39,10 @@ namespace Split.Models
                   .ToTable("M部門")
                   .HasKey(s => new { s.Code });
 
+            modelBuilder.Entity<CaseStaff>()
+                  .ToTable("D物件担当")
+                  .HasKey(cs => new { cs.CaseId, cs.EmployeeCode });
+
         }
 
         static dynamic LoadConfig()
