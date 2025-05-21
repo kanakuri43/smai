@@ -3,6 +3,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"             
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid Margin="8" Background="White">
@@ -79,19 +80,22 @@
                 <TabItem Header="売上">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="100"/>
+                            <RowDefinition Height="150"/>
                             <RowDefinition />
+                            <RowDefinition Height="50"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="50"/>
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" 
@@ -101,20 +105,49 @@
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding CurrentSalesTarget ,StringFormat={}{0:N0}}"/>
+                            
                             <TextBlock Grid.Row="1" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="達成率"/>
+                            <Controls:MetroProgressBar Grid.Row="1" Grid.Column="2"
+                                                       Margin="2"
+                                                       Background="LightGray"
+                                                       Minimum="0" Maximum="100"
+                                                       Value="{Binding SalesProgressRate}" />
                             <TextBlock Grid.Row="1" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding CurrentProfitTarget ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding SalesProgressRate ,StringFormat={}{0:N0}}"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Text="前期比"/>
+                            <Controls:MetroProgressBar Grid.Row="2" Grid.Column="2"
+                                                       Margin="2"
+                                                       Background="LightGray"
+                                                       Minimum="0" Maximum="100"
+                                                       Value="{Binding SalesPreviousRate}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Right"
+                                       Text="{Binding SalesPreviousRate ,StringFormat={}{0:N0}}"/>
+
 
                         </Grid>
-                        
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <Button Content="save" />
+                        </StackPanel>
                         <DataGrid Grid.Row="1" 
                                   ItemsSource="{Binding ResultCollectionView}"
+                                  IsReadOnly="True"
                                   AutoGenerateColumns="False">
-                        <DataGrid.Columns>
+                            
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MahApps.Styles.DataGridColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.Columns>
                             <DataGridTextColumn Header="日" Binding="{Binding Date}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
@@ -122,45 +155,67 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="実績" Binding="{Binding SalesResult, StringFormat={}{0:N0}}" Width="100">
+                            <DataGridTextColumn Header="売上" 
+                                                Binding="{Binding SalesOfRecorded, StringFormat={}{0:N0}}" Width="100">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="見込1" Binding="{Binding SalesEstimate1, StringFormat={}{0:N0}}" Width="100">
+                                <DataGridTextColumn Header="受注" 
+                                                    Binding="{Binding SalesOfReceivedOrders, StringFormat={}{0:N0}}" Width="100" >
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="見込2" Binding="{Binding SalesEstimate2, StringFormat={}{0:N0}}" Width="100">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="HorizontalAlignment" Value="Right" />
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-
-                            </DataGridTextColumn>
-                        </DataGrid.Columns>
+                                <DataGridTextColumn Header="クロージング" 
+                                                    Binding="{Binding SalesOfClosing, StringFormat={}{0:N0}}" Width="100" >
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Right" />
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="その他" 
+                                                    Binding="{Binding SalesOfWish, StringFormat={}{0:N0}}" Width="100">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Right" />
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="合計" 
+                                                    Binding="{Binding SalesOfFinalForecast, StringFormat={}{0:N0}}" Width="140" >
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Right" />
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
                     </DataGrid>
                     </Grid>
                 </TabItem>
                 <TabItem Header="粗利">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="100"/>
+                            <RowDefinition Height="150"/>
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
@@ -168,21 +223,35 @@
                                        VerticalAlignment="Center"
                                        Text="目標"/>
                             <TextBlock Grid.Row="0" Grid.Column="1" 
+                                       TextAlignment="Right"
                                        VerticalAlignment="Center"
-                                       Text="{Binding CurrentSalesTarget}"/>
+                                       Text="{Binding CurrentProfitTarget, StringFormat={}{0:N0}}"/>
                             <TextBlock Grid.Row="1" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="達成率"/>
                             <TextBlock Grid.Row="1" Grid.Column="1" 
+                                       TextAlignment="Right"
                                        VerticalAlignment="Center"
-                                       Text="{Binding CurrentSalesTarget}"/>
+                                       Text="{Binding ProfitProgressRate, StringFormat={}{0:N0}}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Text="前期比"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Right"
+                                       Text="{Binding ProfitProgressRate , StringFormat={}{0:N0}}"/>
 
                         </Grid>
 
                         <DataGrid Grid.Row="1" 
                                   ItemsSource="{Binding ResultCollectionView}"
                                   AutoGenerateColumns="False">
-                        <DataGrid.Columns>
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource MahApps.Styles.DataGridColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Right" />
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.Columns>
                             <DataGridTextColumn Header="日" Binding="{Binding Date}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
@@ -190,21 +259,32 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="実績" Binding="{Binding ProfitResult, StringFormat={}{0:N0}}" Width="100">
+                            <DataGridTextColumn Header="売上" 
+                                            Binding="{Binding ProfitOfRecorded, StringFormat={}{0:N0}}" Width="100">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="見込1" Binding="{Binding ProfitEstimate1, StringFormat={}{0:N0}}" Width="100">
+                            <DataGridTextColumn Header="受注" 
+                                            Binding="{Binding ProfitOfRecorded, StringFormat={}{0:N0}}" Width="100">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right" />
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="見込2" Binding="{Binding ProfitEstimate2, StringFormat={}{0:N0}}" Width="100">
+                            <DataGridTextColumn Header="クロージング" 
+                                            Binding="{Binding ProfitOfClosing, StringFormat={}{0:N0}}" Width="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Right" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="見込" 
+                                                Binding="{Binding ProfitOfWish, StringFormat={}{0:N0}}" Width="100">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right" />

@@ -27,7 +27,12 @@ namespace Split.ViewModels
         private Employee _selectedEmployee;
 
         private decimal _currentSalesTarget;
+        private float _salesProgressRate;
+        private float _salesPreviousRate;
+
         private decimal _currentProfitTarget;
+        private float _profitProgressRate;
+        private float _profitPreviousRate;
 
         private CollectionView _resultCollectionView;
 
@@ -80,10 +85,30 @@ namespace Split.ViewModels
             get { return _currentSalesTarget; }
             set { SetProperty(ref _currentSalesTarget, value); }
         }
+        public float SalesProgressRate
+        {
+            get { return _salesProgressRate; }
+            set { SetProperty(ref _salesProgressRate, value); }
+        }
+        public float SalesPreviousRate
+        {
+            get { return _salesPreviousRate; }
+            set { SetProperty(ref _salesPreviousRate, value); }
+        }
         public decimal CurrentProfitTarget
         {
             get { return _currentProfitTarget; }
             set { SetProperty(ref _currentProfitTarget, value); }
+        }
+        public float ProfitProgressRate
+        {
+            get { return _profitProgressRate; }
+            set { SetProperty(ref _profitProgressRate, value); }
+        }
+        public float ProfitPreviousRate
+        {
+            get { return _profitPreviousRate; }
+            set { SetProperty(ref _profitPreviousRate, value); }
         }
 
 
@@ -114,6 +139,7 @@ namespace Split.ViewModels
             // 月リスト
             Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
             this.SelectedMonth = DateTime.Now.Month;
+            this.SelectedMonth = 4;
 
             // 部署リスト
             using (var context = new AppDbContext())
@@ -128,39 +154,84 @@ namespace Split.ViewModels
             FetchEmployeeList();
             this.SelectedEmployee = Employees.FirstOrDefault(e => e.Code == 253);
 
-            this.CurrentSalesTarget = 123456;
-            this.CurrentProfitTarget = 12;
 
-            FetchResults();
+            FetchTargetAndResults();
         }
 
-        private void FetchResults()
+        private void FetchTargetAndResults()
         {
+            // 社員未選択なら即return
+            if (this.SelectedEmployee == null)
+            {
+                ResultCollectionView = new ListCollectionView(new ObservableCollection<WeeklyProgress>());
+                return;
+            }
+
             using (var context = new AppDbContext())
             {
-
-                if (this.SelectedEmployee == null)
+                // 選択月の目標金額
+                var target = context.Set<Target>()
+                                    .FirstOrDefault(t => t.EmployeeCode == SelectedEmployee.Code && t.YearMonth == (SelectedYear * 100 + SelectedMonth));
+                if (target != null)
                 {
-                    // SelectedEmployeeがnullの場合、ResultCollectionViewを空にする
-                    ResultCollectionView = new ListCollectionView(new ObservableCollection<WeeklyProgress>());
-                    return;
+                    this.CurrentSalesTarget = target.SalesTarget;
+                    this.CurrentProfitTarget = target.ProfitTarget;
                 }
 
-                // 売上・粗利
+
+                // 選択月の 売上・粗利
                 var weeklyProgress = context.Set<WeeklyProgress>()
                     .Where(wp => wp.EmployeeCode == this.SelectedEmployee.Code && wp.YearMonth == (this.SelectedYear * 100 + this.SelectedMonth))
                     .Select(wp => new WeeklyProgress
                     {
                         Date = (wp.Date % 100),
-                        SalesResult = wp.SalesResult,
-                        SalesEstimate1 = wp.SalesEstimate1,
-                        SalesEstimate2 = wp.SalesEstimate2,
-                        ProfitResult = wp.ProfitResult,
-                        ProfitEstimate1 = wp.ProfitEstimate1,
-                        ProfitEstimate2 = wp.ProfitEstimate2
+                        SalesOfRecorded = wp.SalesOfRecorded,   
+                        SalesOfClosing = wp.SalesOfClosing,
+                        SalesOfWish = wp.SalesOfWish,
+                        ProfitOfRecorded = wp.ProfitOfRecorded,
+                        ProfitOfClosing = wp.ProfitOfClosing,
+                        ProfitOfWish = wp.ProfitOfWish
                     })
                     .ToList();
                 ResultCollectionView = new ListCollectionView(new ObservableCollection<WeeklyProgress>(weeklyProgress));
+
+
+                // 選択月の 達成率
+                var finalSalesRecord = weeklyProgress.OrderByDescending(wp => wp.Date).FirstOrDefault();
+                if (finalSalesRecord != null)
+                {
+                    if (CurrentSalesTarget > 0)
+                    {
+                        SalesProgressRate = ((float)(finalSalesRecord.SalesOfRecorded / CurrentSalesTarget) * 100);
+                    }
+                    else
+                    {
+                        SalesProgressRate = 0;
+                    }
+                }
+
+
+                // 前年同月比
+                var previousYearProgress = context.Set<WeeklyProgress>()
+                                            .Where(wp => wp.EmployeeCode == this.SelectedEmployee.Code 
+                                                && wp.YearMonth == ((this.SelectedYear - 1) * 100 + this.SelectedMonth))
+                                            .OrderByDescending(wp => wp.Date) 
+                                            .FirstOrDefault();
+                if (previousYearProgress != null && finalSalesRecord != null)
+                {
+                    if (previousYearProgress.SalesOfRecorded > 0)
+                    {
+                        SalesPreviousRate = ((float)(finalSalesRecord.SalesOfRecorded / previousYearProgress.SalesOfRecorded) * 100);
+                    }
+                    else
+                    {
+                        SalesPreviousRate = 0;
+                    }
+                }
+                else
+                {
+                    SalesPreviousRate = 0;
+                }
 
             }
         }
@@ -178,11 +249,11 @@ namespace Split.ViewModels
         }
         private void YearSelectionChangedExecute()
         {
-            FetchResults();
+            FetchTargetAndResults();
         }
         private void MonthSelectionChangedExecute()
         {
-            FetchResults();
+            FetchTargetAndResults();
         }
         private void SectionSelectionChangedExecute()
         {
@@ -190,8 +261,9 @@ namespace Split.ViewModels
         }
         private void EmployeeSelectionChangedExecute()
         {
-            FetchResults();
+            FetchTargetAndResults();
         }
+
         public bool IsNavigationTarget(NavigationContext navigationContext)
         {
             return true;

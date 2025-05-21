@@ -19,23 +19,39 @@ namespace Split.Models
         [Column("社員コード")]
         public int EmployeeCode { get; set; }
 
+
         [Column("売上実績")]
-        public decimal SalesResult { get; set; }
-
+        public decimal SalesOfRecorded { get; set; }
+        [Column("売上確定")]
+        public decimal SalesOfReceivedOrders { get; set; }
         [Column("売上見込1")]
-        public decimal SalesEstimate1 { get; set; }
-
+        public decimal SalesOfClosing { get; set; }
         [Column("売上見込2")]
-        public decimal SalesEstimate2 { get; set; }
+        public decimal SalesOfWish { get; set; }
+        
+        // 推定
+        public decimal SalesOfFinalForecast 
+        {
+            get { return SalesOfRecorded + SalesOfReceivedOrders + SalesOfClosing + SalesOfWish; } 
+        }
+
+
 
         [Column("粗利実績")]
-        public decimal ProfitResult { get; set; }
-
+        public decimal ProfitOfRecorded { get; set; }
+        [Column("粗利確定")]
+        public decimal ProfitOfReceivedOrders { get; set; }
         [Column("粗利見込1")]
-        public decimal ProfitEstimate1 { get; set; }
-
+        public decimal ProfitOfClosing { get; set; }
         [Column("粗利見込2")]
-        public decimal ProfitEstimate2 { get; set; }
+        public decimal ProfitOfWish { get; set; }
+
+        // 推定
+        public decimal ProfitOfFinalForecast
+        {
+            get { return ProfitOfRecorded + ProfitOfReceivedOrders + ProfitOfClosing + ProfitOfWish; }
+        }
+
         [Column("進捗区分")]
         public byte ProgressType { get; set; }
 
