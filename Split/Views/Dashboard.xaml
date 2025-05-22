@@ -80,12 +80,14 @@
                 <TabItem Header="売上">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="150"/>
                             <RowDefinition />
-                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="200"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
@@ -94,6 +96,7 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition />
@@ -106,38 +109,45 @@
                                        TextAlignment="Right"
                                        Text="{Binding CurrentSalesTarget ,StringFormat={}{0:N0}}"/>
                             
-                            <TextBlock Grid.Row="1" Grid.Column="0" 
-                                       VerticalAlignment="Center"
-                                       Text="達成率"/>
-                            <Controls:MetroProgressBar Grid.Row="1" Grid.Column="2"
+                            <Controls:MetroProgressBar Grid.Row="2" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding SalesProgressRate}" />
-                            <TextBlock Grid.Row="1" Grid.Column="1" 
+                            <TextBlock Grid.Row="2" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding SalesProgressRate ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding SalesProgressRate ,StringFormat={}{0:N0} %}"/>
 
+
+                            
                             <TextBlock Grid.Row="2" Grid.Column="0" 
                                        VerticalAlignment="Center"
-                                       Text="前期比"/>
-                            <Controls:MetroProgressBar Grid.Row="2" Grid.Column="2"
-                                                       Margin="2"
-                                                       Background="LightGray"
-                                                       Minimum="0" Maximum="100"
-                                                       Value="{Binding SalesPreviousRate}" />
+                                       Text="受注"/>
                             <TextBlock Grid.Row="2" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding SalesPreviousRate ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding LatestAmounts[0].FinishedSales ,StringFormat={}{0:N0}}"/>
 
+                            <TextBlock Grid.Row="3" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Text="未受注"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Right"
+                                       Text="{Binding LatestAmounts[0].UnfinishedSales ,StringFormat={}{0:N0}}"/>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Text="合計"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Right"
+                                       Text="{Binding LatestAmounts[0].TotalSales ,StringFormat={}{0:N0}}"/>
 
                         </Grid>
-                        <StackPanel Grid.Row="2" Orientation="Horizontal">
-                            <Button Content="save" />
-                        </StackPanel>
                         <DataGrid Grid.Row="1" 
+                                  Visibility="Hidden"
                                   ItemsSource="{Binding ResultCollectionView}"
                                   IsReadOnly="True"
                                   AutoGenerateColumns="False">

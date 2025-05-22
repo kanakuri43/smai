@@ -1,4 +1,6 @@
-﻿using Prism.Commands;
+﻿using ControlzEx.Standard;
+using Microsoft.EntityFrameworkCore;
+using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
 using Split.Models;
@@ -22,8 +24,10 @@ namespace Split.ViewModels
         private int _selectedMonth;
 
         private ObservableCollection<Section> _sections;
-        private Section _selectedSection;
         private ObservableCollection<Employee> _employees;
+        private ObservableCollection<LatesstAmount> _latesstAmounts;
+
+        private Section _selectedSection;
         private Employee _selectedEmployee;
 
         private decimal _currentSalesTarget;
@@ -110,6 +114,11 @@ namespace Split.ViewModels
             get { return _profitPreviousRate; }
             set { SetProperty(ref _profitPreviousRate, value); }
         }
+        public ObservableCollection<LatesstAmount> LatestAmounts
+        {
+            get { return _latesstAmounts; }
+            set { SetProperty(ref _latesstAmounts, value); }
+        }
 
 
         public CollectionView ResultCollectionView
@@ -141,16 +150,17 @@ namespace Split.ViewModels
             this.SelectedMonth = DateTime.Now.Month;
             this.SelectedMonth = 4;
 
-            // 部署リスト
             using (var context = new AppDbContext())
             {
+                // 部署リスト
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);            
+
             }
 
-            // 社員リスト
+            // 社員リスト 部署変更時に再度呼び出すので関数化
             FetchEmployeeList();
             this.SelectedEmployee = Employees.FirstOrDefault(e => e.Code == 253);
 
@@ -197,40 +207,111 @@ namespace Split.ViewModels
 
 
                 // 選択月の 達成率
-                var finalSalesRecord = weeklyProgress.OrderByDescending(wp => wp.Date).FirstOrDefault();
-                if (finalSalesRecord != null)
-                {
-                    if (CurrentSalesTarget > 0)
-                    {
-                        SalesProgressRate = ((float)(finalSalesRecord.SalesOfRecorded / CurrentSalesTarget) * 100);
-                    }
-                    else
-                    {
-                        SalesProgressRate = 0;
-                    }
-                }
+                //var finalSalesRecord = weeklyProgress.OrderByDescending(wp => wp.Date).FirstOrDefault();
+                //if (finalSalesRecord != null)
+                //{
+                //    if (CurrentSalesTarget > 0)
+                //    {
+                //        SalesProgressRate = ((float)(finalSalesRecord.SalesOfRecorded / CurrentSalesTarget) * 100);
+                //    }
+                //    else
+                //    {
+                //        SalesProgressRate = 0;
+                //    }
+                //}
 
 
                 // 前年同月比
-                var previousYearProgress = context.Set<WeeklyProgress>()
-                                            .Where(wp => wp.EmployeeCode == this.SelectedEmployee.Code 
-                                                && wp.YearMonth == ((this.SelectedYear - 1) * 100 + this.SelectedMonth))
-                                            .OrderByDescending(wp => wp.Date) 
-                                            .FirstOrDefault();
-                if (previousYearProgress != null && finalSalesRecord != null)
+                //var previousYearProgress = context.Set<WeeklyProgress>()
+                //                            .Where(wp => wp.EmployeeCode == this.SelectedEmployee.Code 
+                //                                && wp.YearMonth == ((this.SelectedYear - 1) * 100 + this.SelectedMonth))
+                //                            .OrderByDescending(wp => wp.Date) 
+                //                            .FirstOrDefault();
+                //if (previousYearProgress != null && finalSalesRecord != null)
+                //{
+                //    if (previousYearProgress.SalesOfRecorded > 0)
+                //    {
+                //        SalesPreviousRate = ((float)(finalSalesRecord.SalesOfRecorded / previousYearProgress.SalesOfRecorded) * 100);
+                //    }
+                //    else
+                //    {
+                //        SalesPreviousRate = 0;
+                //    }
+                //}
+                //else
+                //{
+                //    SalesPreviousRate = 0;
+                //}
+
+                // 社員ごとの最終金額
+                var sql = @"
+                        SELECT
+                            F.社員コード AS EmployeeCode
+                            , F.FinishedSales
+                            , F.FinishedProfit
+                            , U.UnfinishedSales
+                            , U.UnfinishedProfit 
+                        FROM
+                            ( 
+                                SELECT
+                                    D物件担当.社員コード
+                                    , ISNULL(SUM(D物件.売上金額), 0) AS FinishedSales
+                                    , ISNULL(SUM(D物件.粗利金額), 0) AS FinishedProfit 
+                                FROM
+                                    D物件 
+                                    INNER JOIN D物件担当 
+                                        ON D物件担当.物件連番 = D物件.連番 
+                                        AND D物件担当.担当区分 = 1 
+                                    LEFT JOIN M物件確度 
+                                        ON M物件確度.コード = D物件.物件確度 
+                                WHERE
+                                    D物件担当.社員コード = {0} 
+                                    AND D物件.売上月度 = {1} 
+                                    AND D物件.削除区分 = 0 
+                                    AND M物件確度.物件確度区分 BETWEEN 30 AND 100 
+                                GROUP BY
+                                    D物件担当.社員コード
+                            ) F 
+                            INNER JOIN ( 
+                                SELECT
+                                    D物件担当.社員コード
+                                    , ISNULL(SUM(D物件.売上金額), 0) AS UnfinishedSales
+                                    , ISNULL(SUM(D物件.粗利金額), 0) AS UnfinishedProfit 
+                                FROM
+                                    D物件 
+                                    INNER JOIN D物件担当 
+                                        ON D物件担当.物件連番 = D物件.連番 
+                                        AND D物件担当.担当区分 = 1 
+                                    LEFT JOIN M物件確度 
+                                        ON M物件確度.コード = D物件.物件確度 
+                                WHERE
+                                    D物件担当.社員コード = {0}
+                                    AND D物件.売上月度 = {1} 
+                                    AND D物件.削除区分 = 0 
+                                    AND M物件確度.物件確度区分 BETWEEN 0 AND 20 
+                                GROUP BY
+                                    D物件担当.社員コード
+                            ) U 
+                                ON F.社員コード = U.社員コード";
+                var results = context.Database.SqlQueryRaw<LatesstAmount>(
+                                    sql,
+                                    this.SelectedEmployee.Code,
+                                    this.SelectedYear * 100 + this.SelectedMonth
+                                ).FirstOrDefault();
+                if (results != null)
                 {
-                    if (previousYearProgress.SalesOfRecorded > 0)
-                    {
-                        SalesPreviousRate = ((float)(finalSalesRecord.SalesOfRecorded / previousYearProgress.SalesOfRecorded) * 100);
-                    }
-                    else
-                    {
-                        SalesPreviousRate = 0;
-                    }
+                    // 結果をObservableCollectionに変換して保存
+                    this.LatestAmounts = new ObservableCollection<LatesstAmount> { results };
+                }
+
+                // 達成率
+                if (CurrentSalesTarget > 0)
+                {
+                    SalesProgressRate = ((float)(LatestAmounts[0].FinishedSales / CurrentSalesTarget) * 100);
                 }
                 else
                 {
-                    SalesPreviousRate = 0;
+                    SalesProgressRate = 0;
                 }
 
             }
