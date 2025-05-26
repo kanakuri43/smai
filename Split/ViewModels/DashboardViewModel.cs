@@ -1,5 +1,6 @@
 ﻿using ControlzEx.Standard;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Regions;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -26,9 +28,14 @@ namespace Split.ViewModels
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<LatesstAmount> _latesstAmounts;
+        private ObservableCollection<ProgressLevel> _progressLevels;
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
+        private int _progressLevelMin;
+        private string _progressLevelMinName;
+        private int _progressLevelMax;
+        private string _progressLevelMaxName;
 
         private decimal _currentSalesTarget;
         private float _salesProgressRate;
@@ -37,6 +44,7 @@ namespace Split.ViewModels
         private decimal _currentProfitTarget;
         private float _profitProgressRate;
         private float _profitPreviousRate;
+
 
         private CollectionView _resultCollectionView;
 
@@ -83,6 +91,26 @@ namespace Split.ViewModels
             get { return _selectedEmployee; }
             set { SetProperty(ref _selectedEmployee, value); }
         }
+        public int ProgressLevelMin
+        {
+            get { return _progressLevelMin; }
+            set { SetProperty(ref _progressLevelMin, value); }
+        }
+        public int ProgressLevelMax
+        {
+            get { return _progressLevelMax; }
+            set { SetProperty(ref _progressLevelMax, value); }
+        }
+        public string ProgressLevelMinName
+        {
+            get { return _progressLevelMinName; }
+            set { SetProperty(ref _progressLevelMinName, value); }
+        }
+        public string ProgressLevelMaxName
+        {
+            get { return _progressLevelMaxName; }
+            set { SetProperty(ref _progressLevelMaxName, value); }
+        }
 
         public decimal CurrentSalesTarget
         {
@@ -120,6 +148,11 @@ namespace Split.ViewModels
             set { SetProperty(ref _latesstAmounts, value); }
         }
 
+        public ObservableCollection<ProgressLevel> ProgressLevels
+        {
+            get { return _progressLevels; }
+            set { SetProperty(ref _progressLevels, value); }
+        }
 
         public CollectionView ResultCollectionView
         {
@@ -131,6 +164,7 @@ namespace Split.ViewModels
         public DelegateCommand MonthSelectionChanged { get; }
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
+        public DelegateCommand SelectedProgressLevelChanged { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
@@ -139,6 +173,7 @@ namespace Split.ViewModels
             MonthSelectionChanged = new DelegateCommand(MonthSelectionChangedExecute);
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
             EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
+            SelectedProgressLevelChanged = new DelegateCommand(SelectedProgressLevelChangedExecute);
 
             // 年リスト
             int currentYear = DateTime.Now.Year;
@@ -156,7 +191,19 @@ namespace Split.ViewModels
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);            
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+
+                // 物権確度
+                this.ProgressLevels = new ObservableCollection<ProgressLevel>(
+                                context.ProgressLevels.Where(s => s.State == 0).ToList()
+                            );
+
+                var sortedProgressLevels = ProgressLevels
+                    .Where(pl => pl.State == 0 && pl.Level <= 20 && pl.Level >= 1)
+                    .OrderByDescending(pl => pl.Level)
+                    .ToList();
+                ProgressLevelMax = 0;
+                ProgressLevelMaxName = sortedProgressLevels[ProgressLevelMax].Symbol;
 
             }
 
@@ -313,6 +360,14 @@ namespace Split.ViewModels
                 {
                     SalesProgressRate = 0;
                 }
+                if (CurrentProfitTarget > 0)
+                {
+                    ProfitProgressRate = ((float)(LatestAmounts[0].FinishedProfit / CurrentProfitTarget) * 100);
+                }
+                else
+                {
+                    ProfitProgressRate = 0;
+                }
 
             }
         }
@@ -342,6 +397,22 @@ namespace Split.ViewModels
         }
         private void EmployeeSelectionChangedExecute()
         {
+            FetchTargetAndResults();
+        }
+        private void SelectedProgressLevelChangedExecute()
+        {
+            var sortedProgressLevels = ProgressLevels
+                .Where(pl => pl.State == 0 && pl.Level <= 20 && pl.Level >= 1)
+                .OrderByDescending(pl => pl.Level)  
+                .ToList();
+
+            if (ProgressLevelMin >= 0 && ProgressLevelMin < sortedProgressLevels.Count)
+            {
+                ProgressLevelMinName = sortedProgressLevels[ProgressLevelMin].Symbol;
+            }
+
+
+
             FetchTargetAndResults();
         }
 

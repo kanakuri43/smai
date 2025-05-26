@@ -18,6 +18,10 @@ namespace Split.Models
         {
             get { return FinishedSales + UnfinishedSales; }
         }
+        public decimal TotalProfit
+        {
+            get { return FinishedProfit + UnfinishedProfit; }
+        }
 
     }
 }
