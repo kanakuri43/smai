@@ -32,10 +32,9 @@ namespace Split.ViewModels
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
-        private int _progressLevelMin;
-        private string _progressLevelMinName;
-        private int _progressLevelMax;
-        private string _progressLevelMaxName;
+        private int _selectedProgressLevel;
+        private ProgressLevel _progressLevelMin;
+        private ProgressLevel _progressLevelMax;
 
         private decimal _currentSalesTarget;
         private float _salesProgressRate;
@@ -91,25 +90,20 @@ namespace Split.ViewModels
             get { return _selectedEmployee; }
             set { SetProperty(ref _selectedEmployee, value); }
         }
-        public int ProgressLevelMin
+        public ProgressLevel ProgressLevelMin
         {
             get { return _progressLevelMin; }
             set { SetProperty(ref _progressLevelMin, value); }
         }
-        public int ProgressLevelMax
+        public int SelectedProgressLevel
+        {
+            get { return _selectedProgressLevel; }
+            set { SetProperty(ref _selectedProgressLevel, value); }
+        }
+        public ProgressLevel ProgressLevelMax
         {
             get { return _progressLevelMax; }
             set { SetProperty(ref _progressLevelMax, value); }
-        }
-        public string ProgressLevelMinName
-        {
-            get { return _progressLevelMinName; }
-            set { SetProperty(ref _progressLevelMinName, value); }
-        }
-        public string ProgressLevelMaxName
-        {
-            get { return _progressLevelMaxName; }
-            set { SetProperty(ref _progressLevelMaxName, value); }
         }
 
         public decimal CurrentSalesTarget
@@ -202,8 +196,7 @@ namespace Split.ViewModels
                     .Where(pl => pl.State == 0 && pl.Level <= 20 && pl.Level >= 1)
                     .OrderByDescending(pl => pl.Level)
                     .ToList();
-                ProgressLevelMax = 0;
-                ProgressLevelMaxName = sortedProgressLevels[ProgressLevelMax].Symbol;
+                ProgressLevelMax = sortedProgressLevels[0];
 
             }
 
@@ -405,12 +398,15 @@ namespace Split.ViewModels
                 .Where(pl => pl.State == 0 && pl.Level <= 20 && pl.Level >= 1)
                 .OrderByDescending(pl => pl.Level)  
                 .ToList();
-
-            if (ProgressLevelMin >= 0 && ProgressLevelMin < sortedProgressLevels.Count)
+            // 選択されたProgressLevelを取得
+            if (SelectedProgressLevel >= 0 && SelectedProgressLevel < sortedProgressLevels.Count)
             {
-                ProgressLevelMinName = sortedProgressLevels[ProgressLevelMin].Symbol;
+                ProgressLevelMin = sortedProgressLevels[SelectedProgressLevel];
             }
-
+            else
+            {
+                ProgressLevelMin = null; // 範囲外の場合はnullを設定
+            }
 
 
             FetchTargetAndResults();

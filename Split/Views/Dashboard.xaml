@@ -97,14 +97,14 @@
                             <TextBlock Grid.Column="0"
                                        Text="未受注設定"/>
                             <TextBlock Grid.Column="1"
-                                       Text="{Binding ProgressLevelMaxName}" 
+                                       Text="{Binding ProgressLevelMax.Name}" 
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"/>
                             <Slider Grid.Column="2" 
                                     Margin="4"
                                     TickFrequency="1"
                                     IsSnapToTickEnabled="True"
-                                    Value="{Binding ProgressLevelMin}"
+                                    Value="{Binding SelectedProgressLevel}"
                                     Minimum="0"
                                     Maximum="6">
                                 <i:Interaction.Triggers>
@@ -117,7 +117,7 @@
                             </Slider>
                             <TextBlock Grid.Column="3"
                                        VerticalAlignment="Center"
-                                       Text="{Binding ProgressLevelMinName}"/>
+                                       Text="{Binding ProgressLevelMin.Symbol}"/>
                         </Grid>
                         <Grid Grid.Row="1">
                             <Grid.RowDefinitions>
