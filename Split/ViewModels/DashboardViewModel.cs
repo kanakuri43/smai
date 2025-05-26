@@ -197,6 +197,7 @@ namespace Split.ViewModels
                     .OrderByDescending(pl => pl.Level)
                     .ToList();
                 ProgressLevelMax = sortedProgressLevels[0];
+                ProgressLevelMin = sortedProgressLevels[0];
 
             }
 
@@ -246,43 +247,6 @@ namespace Split.ViewModels
                 ResultCollectionView = new ListCollectionView(new ObservableCollection<WeeklyProgress>(weeklyProgress));
 
 
-                // 選択月の 達成率
-                //var finalSalesRecord = weeklyProgress.OrderByDescending(wp => wp.Date).FirstOrDefault();
-                //if (finalSalesRecord != null)
-                //{
-                //    if (CurrentSalesTarget > 0)
-                //    {
-                //        SalesProgressRate = ((float)(finalSalesRecord.SalesOfRecorded / CurrentSalesTarget) * 100);
-                //    }
-                //    else
-                //    {
-                //        SalesProgressRate = 0;
-                //    }
-                //}
-
-
-                // 前年同月比
-                //var previousYearProgress = context.Set<WeeklyProgress>()
-                //                            .Where(wp => wp.EmployeeCode == this.SelectedEmployee.Code 
-                //                                && wp.YearMonth == ((this.SelectedYear - 1) * 100 + this.SelectedMonth))
-                //                            .OrderByDescending(wp => wp.Date) 
-                //                            .FirstOrDefault();
-                //if (previousYearProgress != null && finalSalesRecord != null)
-                //{
-                //    if (previousYearProgress.SalesOfRecorded > 0)
-                //    {
-                //        SalesPreviousRate = ((float)(finalSalesRecord.SalesOfRecorded / previousYearProgress.SalesOfRecorded) * 100);
-                //    }
-                //    else
-                //    {
-                //        SalesPreviousRate = 0;
-                //    }
-                //}
-                //else
-                //{
-                //    SalesPreviousRate = 0;
-                //}
-
                 // 社員ごとの最終金額
                 var sql = @"
                         SELECT
@@ -328,7 +292,7 @@ namespace Split.ViewModels
                                     D物件担当.社員コード = {0}
                                     AND D物件.売上月度 = {1} 
                                     AND D物件.削除区分 = 0 
-                                    AND M物件確度.物件確度区分 BETWEEN 0 AND 20 
+                                    AND M物件確度.物件確度区分 BETWEEN {2} AND {3}
                                 GROUP BY
                                     D物件担当.社員コード
                             ) U 
@@ -336,13 +300,17 @@ namespace Split.ViewModels
                 var results = context.Database.SqlQueryRaw<LatesstAmount>(
                                     sql,
                                     this.SelectedEmployee.Code,
-                                    this.SelectedYear * 100 + this.SelectedMonth
+                                    this.SelectedYear * 100 + this.SelectedMonth,
+                                    this.ProgressLevelMin.Level,
+                                    this.ProgressLevelMax.Level
                                 ).FirstOrDefault();
-                if (results != null)
+                if (results == null)
                 {
-                    // 結果をObservableCollectionに変換して保存
-                    this.LatestAmounts = new ObservableCollection<LatesstAmount> { results };
+                    return;
                 }
+
+                // 結果をObservableCollectionに変換して保存
+                this.LatestAmounts = new ObservableCollection<LatesstAmount> { results };
 
                 // 達成率
                 if (CurrentSalesTarget > 0)

@@ -97,7 +97,7 @@
                             <TextBlock Grid.Column="0"
                                        Text="未受注設定"/>
                             <TextBlock Grid.Column="1"
-                                       Text="{Binding ProgressLevelMax.Name}" 
+                                       Text="{Binding ProgressLevelMax.Symbol}" 
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"/>
                             <Slider Grid.Column="2" 

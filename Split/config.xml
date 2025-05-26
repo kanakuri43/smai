@@ -1,7 +1,7 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
 <Configuration>
   <Database>
-    <ConnectionString>Data Source=172.16.3.168;Initial Catalog=PSM_V6_NET;User ID=sa;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
+    <ConnectionString>Data Source=localhost;Initial Catalog=PSM_V6_NET;User ID=sa;Password=Sapassword1;TrustServerCertificate=true</ConnectionString>
 
   </Database>
 	
