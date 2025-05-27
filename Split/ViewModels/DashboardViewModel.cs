@@ -38,10 +38,12 @@ namespace Split.ViewModels
 
         private decimal _currentSalesTarget;
         private float _salesProgressRate;
+        private float _salesForecastProgressRate;
         private float _salesPreviousRate;
 
         private decimal _currentProfitTarget;
         private float _profitProgressRate;
+        private float _profitForecastProgressRate;
         private float _profitPreviousRate;
 
 
@@ -114,7 +116,16 @@ namespace Split.ViewModels
         public float SalesProgressRate
         {
             get { return _salesProgressRate; }
-            set { SetProperty(ref _salesProgressRate, value); }
+            set
+            {
+                SetProperty(ref _salesProgressRate, value);
+                RaisePropertyChanged(nameof(IsSalesCompleted));
+            }
+        }
+        public float SalesForecastProgressRate
+        {
+            get { return _salesForecastProgressRate; }
+            set { SetProperty(ref _salesForecastProgressRate, value); }
         }
         public float SalesPreviousRate
         {
@@ -129,7 +140,16 @@ namespace Split.ViewModels
         public float ProfitProgressRate
         {
             get { return _profitProgressRate; }
-            set { SetProperty(ref _profitProgressRate, value); }
+            set
+            {
+                SetProperty(ref _profitProgressRate, value);
+                RaisePropertyChanged(nameof(IsProfitCompleted));
+            }
+        }
+        public float ProfitForecastProgressRate
+        {
+            get { return _profitForecastProgressRate; }
+            set { SetProperty(ref _profitForecastProgressRate, value); }
         }
         public float ProfitPreviousRate
         {
@@ -153,6 +173,15 @@ namespace Split.ViewModels
             get { return _resultCollectionView; }
             set { SetProperty(ref _resultCollectionView, value); }
         }
+        public bool IsSalesCompleted
+        {
+            get { return SalesProgressRate >= 100; }
+        }
+        public bool IsProfitCompleted
+        {
+            get { return ProfitProgressRate >= 100; }
+        }
+
 
         public DelegateCommand YearSelectionChanged { get; }
         public DelegateCommand MonthSelectionChanged { get; }
@@ -177,7 +206,6 @@ namespace Split.ViewModels
             // 月リスト
             Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
             this.SelectedMonth = DateTime.Now.Month;
-            this.SelectedMonth = 4;
 
             using (var context = new AppDbContext())
             {
@@ -270,7 +298,7 @@ namespace Split.ViewModels
                                         ON M物件確度.コード = D物件.物件確度 
                                 WHERE
                                     D物件担当.社員コード = {0} 
-                                    AND D物件.売上月度 = {1} 
+                                    AND D物件.受注月度 = {1} 
                                     AND D物件.削除区分 = 0 
                                     AND M物件確度.物件確度区分 BETWEEN 30 AND 100 
                                 GROUP BY
@@ -290,7 +318,7 @@ namespace Split.ViewModels
                                         ON M物件確度.コード = D物件.物件確度 
                                 WHERE
                                     D物件担当.社員コード = {0}
-                                    AND D物件.売上月度 = {1} 
+                                    AND D物件.受注月度 = {1} 
                                     AND D物件.削除区分 = 0 
                                     AND M物件確度.物件確度区分 >= {2}
                                     AND M物件確度.物件確度区分 <= {3}
@@ -321,18 +349,22 @@ namespace Split.ViewModels
                 if (CurrentSalesTarget > 0)
                 {
                     SalesProgressRate = ((float)(LatestAmounts[0].FinishedSales / CurrentSalesTarget) * 100);
+                    SalesForecastProgressRate = ((float)((LatestAmounts[0].FinishedSales + LatestAmounts[0].UnfinishedSales) / CurrentSalesTarget) * 100);
                 }
                 else
                 {
                     SalesProgressRate = 0;
+                    SalesForecastProgressRate = 0;
                 }
                 if (CurrentProfitTarget > 0)
                 {
                     ProfitProgressRate = ((float)(LatestAmounts[0].FinishedProfit / CurrentProfitTarget) * 100);
+                    ProfitForecastProgressRate = ((float)((LatestAmounts[0].FinishedProfit + LatestAmounts[0].UnfinishedProfit) / CurrentProfitTarget) * 100);
                 }
                 else
                 {
                     ProfitProgressRate = 0;
+                    ProfitForecastProgressRate = 0;
                 }
 
             }
