@@ -27,5 +27,9 @@ namespace Split.Models
         public decimal SalesPrice { get; set; }
         [Column("粗利金額")]
         public decimal ProfitPrice { get; set; }
+        [Column("記号")]
+        public string Symbol { get; set; }
+
+
     }
 }

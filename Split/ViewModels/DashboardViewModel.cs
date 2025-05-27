@@ -377,6 +377,7 @@ namespace Split.ViewModels
                 sql = @"
                         SELECT
                             D物件.*
+                            , 記号
                         FROM
                             D物件 
                             INNER JOIN D物件担当 

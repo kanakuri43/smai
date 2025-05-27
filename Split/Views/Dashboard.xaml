@@ -12,8 +12,8 @@
     <Grid Margin="8" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -121,9 +121,10 @@
 
         </Grid>
         <Grid Grid.Column="1"
-              Margin="20,0,0,0">
+              Margin="30,0,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition />
+                <RowDefinition Height="230"/>
+                <RowDefinition Height="230"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
@@ -142,11 +143,14 @@
                     <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="60"/>
                     <ColumnDefinition Width="80"/>
-                    <ColumnDefinition Width="80"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
+                <Border Grid.Row="0" Grid.Column="0"
+                        BorderBrush="LightGray"
+                        BorderThickness="4,0,0,0"/>
                 <TextBlock Grid.Row="0" Grid.Column="0" 
                                        VerticalAlignment="Center"
+                                       Margin="10,0,0,0"
                                        FontSize="16"
                                        FontWeight="Bold"
                                        Text="売上"/>
@@ -208,7 +212,8 @@
                                                        Value="{Binding SalesForecastProgressRate}" />
 
             </Grid>
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1"
+                  >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
@@ -222,12 +227,16 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="60"/>
                     <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="60"/>
                     <ColumnDefinition Width="80"/>
-                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
+                <Border Grid.Row="0" Grid.Column="0"
+                        BorderBrush="LightGray"
+                        BorderThickness="4,0,0,0"/>
                 <TextBlock Grid.Row="0" Grid.Column="0" 
                                        VerticalAlignment="Center"
+                                       Margin="10,0,0,0"
                                        FontWeight="Bold"
                                        FontSize="16"
                                        Text="粗利"/>
@@ -298,27 +307,32 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            <Border Grid.Row="0" 
+                        BorderBrush="LightGray"
+                        BorderThickness="4,0,0,0"/>
             <TextBlock Grid.Row="0" 
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
                        FontWeight="Bold"
                        FontSize="16"
                        Text="受注予定案件"/>
             <ListView Grid.Row="2" 
+                      Margin="0,10,0,0"
                       ItemsSource="{Binding Cases}"
-                      SelectedValuePath="OrderNo"
-                      SelectedValue="{Binding SelectedOrderNo}" >
+                       >
 
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Customer" DisplayMemberBinding="{Binding CustomerName}" Width="50"/>
-                        <GridViewColumn Header="Case" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                        <GridViewColumn Header="Sales" Width="80">
+                        <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                        <GridViewColumn Header="案件" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                        <GridViewColumn Header="売上" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Profit" Width="80">
+                        <GridViewColumn Header="粗利" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
