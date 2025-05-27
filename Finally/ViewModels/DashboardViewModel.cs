@@ -14,18 +14,32 @@ namespace Finally.ViewModels
     {
         private readonly IRegionManager _regionManager;
 
-        private ObservableCollection<int> _months;
+        private ObservableCollection<int> _years;
         private int _selectedYear;
+        private ObservableCollection<int> _months;
         private int _selectedMonth;
-        private int _selectedSectionCode;
-        private int _selectedEmployeeCode;
-        private CollectionView _resultCollectionView;
+
+        private ObservableCollection<Section> _sections;
+        private ObservableCollection<Employee> _employees;
+        private ObservableCollection<ProgressLevel> _progressLevels;
+        private ObservableCollection<Case> _cases;
+
+        private Section _selectedSection;
+        private Employee _selectedEmployee;
+        private int _selectedProgressLevel;
+        private ProgressLevel _progressLevelMin;
+        private ProgressLevel _progressLevelMax;
 
 
         public ObservableCollection<int> Months
         {
             get { return _months; }
             set { SetProperty(ref _months, value); }
+        }
+        public ObservableCollection<int> Years
+        {
+            get { return _years; }
+            set { SetProperty(ref _years, value); }
         }
         public int SelectedYear
         {
@@ -38,29 +52,134 @@ namespace Finally.ViewModels
             set { SetProperty(ref _selectedMonth, value); }
         }
 
-        public int SelectedSectionCode
+        public Section SelectedSection
         {
-            get { return _selectedSectionCode; }
-            set { SetProperty(ref _selectedSectionCode, value); }
+            get { return _selectedSection; }
+            set { SetProperty(ref _selectedSection, value); }
         }
 
-        public int SelectedEmployeeCode
+        public Employee SelectedEmployee
         {
-            get { return _selectedEmployeeCode; }
-            set { SetProperty(ref _selectedEmployeeCode, value); }
+            get { return _selectedEmployee; }
+            set { SetProperty(ref _selectedEmployee, value); }
         }
-        public CollectionView ResultCollectionView
+        public ObservableCollection<Section> Sections
         {
-            get { return _resultCollectionView; }
-            set { SetProperty(ref _resultCollectionView, value); }
+            get { return _sections; }
+            set { SetProperty(ref _sections, value); }
         }
+        public ObservableCollection<Employee> Employees
+        {
+            get { return _employees; }
+            set { SetProperty(ref _employees, value); }
+        }
+        public ProgressLevel ProgressLevelMin
+        {
+            get { return _progressLevelMin; }
+            set { SetProperty(ref _progressLevelMin, value); }
+        }
+        public int SelectedProgressLevel
+        {
+            get { return _selectedProgressLevel; }
+            set { SetProperty(ref _selectedProgressLevel, value); }
+        }
+        public ProgressLevel ProgressLevelMax
+        {
+            get { return _progressLevelMax; }
+            set { SetProperty(ref _progressLevelMax, value); }
+        }
+        public ObservableCollection<ProgressLevel> ProgressLevels
+        {
+            get { return _progressLevels; }
+            set { SetProperty(ref _progressLevels, value); }
+        }
+
+        public DelegateCommand YearSelectionChanged { get; }
+        public DelegateCommand MonthSelectionChanged { get; }
+        public DelegateCommand SectionSelectionChanged { get; }
+        public DelegateCommand EmployeeSelectionChanged { get; }
+        public DelegateCommand SelectedProgressLevelChanged { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
             _regionManager = regionManager;
+            YearSelectionChanged = new DelegateCommand(YearSelectionChangedExecute);
+            MonthSelectionChanged = new DelegateCommand(MonthSelectionChangedExecute);
+            SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
+            EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
+            SelectedProgressLevelChanged = new DelegateCommand(SelectedProgressLevelChangedExecute);
 
+            // 年リスト
+            int currentYear = DateTime.Now.Year;
+            Years = new ObservableCollection<int>(Enumerable.Range(currentYear - 1, 3));
+            this.SelectedYear = currentYear;
+
+            // 月リスト
             Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
+            this.SelectedMonth = DateTime.Now.Month;
 
+            using (var context = new AppDbContext())
+            {
+                // 部署リスト
+                Sections = new ObservableCollection<Section>(
+                            context.Sections.Where(s => s.State == 0).ToList()
+                        );
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
+
+                // 物権確度
+                this.ProgressLevels = new ObservableCollection<ProgressLevel>(
+                                context.ProgressLevels.Where(s => s.State == 0).ToList()
+                            );
+
+                var sortedProgressLevels = ProgressLevels
+                    .Where(pl => pl.State == 0 && pl.Level <= 20 && pl.Level >= 1)
+                    .OrderByDescending(pl => pl.Level)
+                    .ToList();
+                ProgressLevelMax = sortedProgressLevels[0];
+                ProgressLevelMin = sortedProgressLevels[0];
+
+            }
+
+        }
+        private void ScreenUpdate()
+        {
+
+        }
+
+        private void FetchEmployeeList()
+        {
+
+            using (var context = new AppDbContext())
+            {
+                Employees = new ObservableCollection<Employee>(
+                    context.Employees
+                        .Where(e => e.SectionCode == this.SelectedSection.Code && e.State == 0)
+                        .ToList()
+                );
+            }
+        }
+
+        private void YearSelectionChangedExecute()
+        {
+            ScreenUpdate();
+        }
+        private void MonthSelectionChangedExecute()
+        {
+            ScreenUpdate();
+        }
+        private void SectionSelectionChangedExecute()
+        {
+            FetchEmployeeList();
+        }
+        private void EmployeeSelectionChangedExecute()
+        {
+            ScreenUpdate();
+        }
+        private void SelectedProgressLevelChangedExecute()
+        {
+
+
+            ScreenUpdate();
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
