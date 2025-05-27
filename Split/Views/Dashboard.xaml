@@ -16,6 +16,8 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition />
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0"
                             Margin="0,0,0,0"
@@ -60,7 +62,6 @@
             </ComboBox>
 
             <ListBox Grid.Row="2"
-                     SelectionMode="Multiple"
                      ItemsSource="{Binding Employees}"
                      DisplayMemberPath="Name"
                      SelectedValuePath="Code"
@@ -75,189 +76,181 @@
                 </i:Interaction.Triggers>
             </ListBox>
 
-        </Grid>
-        <Grid Grid.Column="1">
-
-            <TabControl Margin="8,0,0,0"
-                        >
-                <TabItem Header="当月">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="100"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0"
-                                       Text="未受注設定"/>
-                            <TextBlock Grid.Column="1"
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
                                        Text="{Binding ProgressLevelMax.Symbol}" 
-                                       HorizontalAlignment="Right"
                                        VerticalAlignment="Center"/>
-                            <Slider Grid.Column="2" 
-                                    Margin="4"
-                                    TickFrequency="1"
-                                    IsSnapToTickEnabled="True"
-                                    Value="{Binding SelectedProgressLevel}"
-                                    Minimum="0"
-                                    Maximum="6">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="ValueChanged">
-                                        <prism:InvokeCommandAction 
+                <Slider Grid.Column="1" 
+                        Margin="4"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Value="{Binding SelectedProgressLevel}"
+                        Minimum="0"
+                        Maximum="6">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="ValueChanged">
+                            <prism:InvokeCommandAction 
                                             Command="{Binding SelectedProgressLevelChanged}" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
 
-                            </Slider>
-                            <TextBlock Grid.Column="3"
-                                       VerticalAlignment="Center"
-                                       Text="{Binding ProgressLevelMin.Symbol}"/>
-                        </Grid>
-                        <Grid Grid.Row="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" 
+                </Slider>
+
+                <TextBlock Grid.Column="2"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           Text="{Binding ProgressLevelMin.Symbol}"/>
+
+            </Grid>
+
+        </Grid>
+        <Grid Grid.Column="1"
+              Margin="20,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        FontSize="16"
                                        FontWeight="Bold"
                                        Text="売上"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" 
+                <TextBlock Grid.Row="1" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="目標"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" 
+                <TextBlock Grid.Row="1" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding CurrentSalesTarget ,StringFormat={}{0:N0}}"/>
-                                                        
-                            <TextBlock Grid.Row="3" Grid.Column="0" 
+
+                <TextBlock Grid.Row="3" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="受注"/>
-                            <TextBlock Grid.Row="3" Grid.Column="1" 
+                <TextBlock Grid.Row="3" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestAmounts[0].FinishedSales ,StringFormat={}{0:N0}}"/>
-                            <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding SalesProgressRate}" />
-                            <TextBlock Grid.Row="3" Grid.Column="2" 
+                <TextBlock Grid.Row="3" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding SalesProgressRate ,StringFormat={}{0:N0} %}"/>
 
-                            <TextBlock Grid.Row="4" Grid.Column="0" 
+                <TextBlock Grid.Row="4" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="未受注"/>
-                            <TextBlock Grid.Row="4" Grid.Column="1" 
+                <TextBlock Grid.Row="4" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestAmounts[0].UnfinishedSales ,StringFormat={}{0:N0}}"/>
 
-                            <TextBlock Grid.Row="5" Grid.Column="0" 
+                <TextBlock Grid.Row="5" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="合計"/>
-                            <TextBlock Grid.Row="5" Grid.Column="1" 
+                <TextBlock Grid.Row="5" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestAmounts[0].TotalSales ,StringFormat={}{0:N0}}"/>
 
-                        </Grid>
-                        <Grid Grid.Row="2">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="80"/>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" 
+            </Grid>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        FontWeight="Bold"
                                        FontSize="16"
                                        Text="粗利"/>
-                            
-                            <TextBlock Grid.Row="1" Grid.Column="0" 
+
+                <TextBlock Grid.Row="1" Grid.Column="0" 
                                     VerticalAlignment="Center"
                                     Text="目標"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" 
+                <TextBlock Grid.Row="1" Grid.Column="1" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"
                                     Text="{Binding CurrentProfitTarget, StringFormat={}{0:N0}}"/>
 
-                            <TextBlock Grid.Row="3" Grid.Column="0" 
+                <TextBlock Grid.Row="3" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="受注"/>
-                            <TextBlock Grid.Row="3" Grid.Column="1" 
+                <TextBlock Grid.Row="3" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestAmounts[0].FinishedProfit ,StringFormat={}{0:N0}}"/>
-                            <TextBlock Grid.Row="3" Grid.Column="2" 
+                <TextBlock Grid.Row="3" Grid.Column="2" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"
                                     Text="{Binding ProfitProgressRate, StringFormat={}{0:N0} %}"/>
-                            <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding ProfitProgressRate}" />
 
 
-                            <TextBlock Grid.Row="4" Grid.Column="0" 
+                <TextBlock Grid.Row="4" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="未受注"/>
-                            <TextBlock Grid.Row="4" Grid.Column="1" 
+                <TextBlock Grid.Row="4" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestAmounts[0].UnfinishedProfit ,StringFormat={}{0:N0}}"/>
 
-                            <TextBlock Grid.Row="5" Grid.Column="0" 
+                <TextBlock Grid.Row="5" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="合計"/>
-                            <TextBlock Grid.Row="5" Grid.Column="1" 
+                <TextBlock Grid.Row="5" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestAmounts[0].TotalProfit ,StringFormat={}{0:N0}}"/>
 
 
-                        </Grid>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="当期">
+            </Grid>
 
-                </TabItem>
-            </TabControl>
+
         </Grid>
     </Grid>
 </UserControl>

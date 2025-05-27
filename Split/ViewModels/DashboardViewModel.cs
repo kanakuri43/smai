@@ -203,7 +203,7 @@ namespace Split.ViewModels
 
             // 社員リスト 部署変更時に再度呼び出すので関数化
             FetchEmployeeList();
-            this.SelectedEmployee = Employees.FirstOrDefault(e => e.Code == 253);
+            //this.SelectedEmployee = Employees.FirstOrDefault(e => e.Code == 253);
 
 
             FetchTargetAndResults();
@@ -251,10 +251,10 @@ namespace Split.ViewModels
                 var sql = @"
                         SELECT
                             F.社員コード AS EmployeeCode
-                            , F.FinishedSales
-                            , F.FinishedProfit
-                            , U.UnfinishedSales
-                            , U.UnfinishedProfit 
+                            , ISNULL(F.FinishedSales, 0) AS FinishedSales
+                            , ISNULL(F.FinishedProfit, 0) AS FinishedProfit
+                            , ISNULL(U.UnfinishedSales, 0) AS UnfinishedSales
+                            , ISNULL(U.UnfinishedProfit, 0) AS UnfinishedProfit 
                         FROM
                             ( 
                                 SELECT
@@ -276,7 +276,7 @@ namespace Split.ViewModels
                                 GROUP BY
                                     D物件担当.社員コード
                             ) F 
-                            INNER JOIN ( 
+                            LEFT JOIN ( 
                                 SELECT
                                     D物件担当.社員コード
                                     , ISNULL(SUM(D物件.売上金額), 0) AS UnfinishedSales
@@ -292,7 +292,8 @@ namespace Split.ViewModels
                                     D物件担当.社員コード = {0}
                                     AND D物件.売上月度 = {1} 
                                     AND D物件.削除区分 = 0 
-                                    AND M物件確度.物件確度区分 BETWEEN {2} AND {3}
+                                    AND M物件確度.物件確度区分 >= {2}
+                                    AND M物件確度.物件確度区分 <= {3}
                                 GROUP BY
                                     D物件担当.社員コード
                             ) U 
@@ -306,6 +307,10 @@ namespace Split.ViewModels
                                 ).FirstOrDefault();
                 if (results == null)
                 {
+                    SalesProgressRate = 0;
+                    ProfitProgressRate = 0;
+                    this.LatestAmounts = new ObservableCollection<LatesstAmount>();
+                    
                     return;
                 }
 
