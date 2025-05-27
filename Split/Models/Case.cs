@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Split.Models
 {
-    [Table("D物件")]
 
     public class Case
     {

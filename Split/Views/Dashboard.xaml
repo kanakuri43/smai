@@ -13,7 +13,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -67,10 +67,17 @@
 
             <ListBox Grid.Row="2"
                      ItemsSource="{Binding Employees}"
-                     DisplayMemberPath="Name"
                      SelectedValuePath="Code"
                      SelectedValue="{Binding SelectedEmployeeCode}"
                      SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Code}" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <prism:InvokeCommandAction 
@@ -116,11 +123,10 @@
         <Grid Grid.Column="1"
               Margin="20,0,0,0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
@@ -134,8 +140,8 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="60"/>
                     <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="60"/>
                     <ColumnDefinition Width="80"/>
-                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="80"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
@@ -202,7 +208,7 @@
                                                        Value="{Binding SalesForecastProgressRate}" />
 
             </Grid>
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
@@ -288,21 +294,47 @@
 
         </Grid>
         <Grid Grid.Column="2">
-            <ListBox Grid.Row="2"
-                     ItemsSource="{Binding Employees}"
-                     DisplayMemberPath="Name"
-                     SelectedValuePath="Code"
-                     SelectedValue="{Binding SelectedEmployeeCode}"
-                     SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" 
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="受注予定案件"/>
+            <ListView Grid.Row="2" 
+                      ItemsSource="{Binding Cases}"
+                      SelectedValuePath="OrderNo"
+                      SelectedValue="{Binding SelectedOrderNo}" >
+
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Customer" DisplayMemberBinding="{Binding CustomerName}" Width="50"/>
+                        <GridViewColumn Header="Case" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                        <GridViewColumn Header="Sales" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Profit" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="SelectionChanged">
-                        <prism:InvokeCommandAction 
-                            Command="{Binding EmployeeSelectionChanged}" 
-                            TriggerParameterPath="AddedItems"/>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-            </ListBox>
+            </ListView>
 
         </Grid>
+
     </Grid>
 </UserControl>

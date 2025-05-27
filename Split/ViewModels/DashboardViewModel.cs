@@ -29,6 +29,7 @@ namespace Split.ViewModels
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<LatesstAmount> _latesstAmounts;
         private ObservableCollection<ProgressLevel> _progressLevels;
+        private ObservableCollection<Case> _cases;
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
@@ -167,6 +168,11 @@ namespace Split.ViewModels
             get { return _progressLevels; }
             set { SetProperty(ref _progressLevels, value); }
         }
+        public ObservableCollection<Case> Cases
+        {
+            get { return _cases; }
+            set { SetProperty(ref _cases, value); }
+        }
 
         public CollectionView ResultCollectionView
         {
@@ -213,7 +219,7 @@ namespace Split.ViewModels
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -231,13 +237,11 @@ namespace Split.ViewModels
 
             // 社員リスト 部署変更時に再度呼び出すので関数化
             FetchEmployeeList();
-            //this.SelectedEmployee = Employees.FirstOrDefault(e => e.Code == 253);
 
-
-            FetchTargetAndResults();
+            ScreenUpdate();
         }
 
-        private void FetchTargetAndResults()
+        private void ScreenUpdate()
         {
             // 社員未選択なら即return
             if (this.SelectedEmployee == null)
@@ -326,14 +330,14 @@ namespace Split.ViewModels
                                     D物件担当.社員コード
                             ) U 
                                 ON F.社員コード = U.社員コード";
-                var results = context.Database.SqlQueryRaw<LatesstAmount>(
+                var la = context.Database.SqlQueryRaw<LatesstAmount>(
                                     sql,
                                     this.SelectedEmployee.Code,
                                     this.SelectedYear * 100 + this.SelectedMonth,
                                     this.ProgressLevelMin.Level,
                                     this.ProgressLevelMax.Level
                                 ).FirstOrDefault();
-                if (results == null)
+                if (la == null)
                 {
                     SalesProgressRate = 0;
                     ProfitProgressRate = 0;
@@ -341,9 +345,11 @@ namespace Split.ViewModels
                     
                     return;
                 }
+                else
+                { 
+                    this.LatestAmounts = new ObservableCollection<LatesstAmount> { la };
+                }
 
-                // 結果をObservableCollectionに変換して保存
-                this.LatestAmounts = new ObservableCollection<LatesstAmount> { results };
 
                 // 達成率
                 if (CurrentSalesTarget > 0)
@@ -367,6 +373,40 @@ namespace Split.ViewModels
                     ProfitForecastProgressRate = 0;
                 }
 
+                // 案件リスト
+                sql = @"
+                        SELECT
+                            D物件.*
+                        FROM
+                            D物件 
+                            INNER JOIN D物件担当 
+                                ON D物件担当.物件連番 = D物件.連番 
+                                AND D物件担当.担当区分 = 1 
+                            LEFT JOIN M物件確度 
+                                ON M物件確度.コード = D物件.物件確度 
+                        WHERE
+                            D物件担当.社員コード = {0} 
+                            AND D物件.受注月度 = {1} 
+                            AND D物件.削除区分 = 0 
+                            AND M物件確度.物件確度区分 >= {2}
+                            AND M物件確度.物件確度区分 <= {3}
+                        ";
+                var c = context.Database.SqlQueryRaw<Case>(
+                                    sql,
+                                    this.SelectedEmployee.Code,
+                                    this.SelectedYear * 100 + this.SelectedMonth,
+                                    this.ProgressLevelMin.Level,
+                                    this.ProgressLevelMax.Level
+                                ).ToList();
+                if (c == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.Cases = new ObservableCollection<Case>(c);
+                }
+
             }
         }
         private void FetchEmployeeList()
@@ -381,13 +421,15 @@ namespace Split.ViewModels
                 );
             }
         }
+
+
         private void YearSelectionChangedExecute()
         {
-            FetchTargetAndResults();
+            ScreenUpdate();
         }
         private void MonthSelectionChangedExecute()
         {
-            FetchTargetAndResults();
+            ScreenUpdate();
         }
         private void SectionSelectionChangedExecute()
         {
@@ -395,7 +437,7 @@ namespace Split.ViewModels
         }
         private void EmployeeSelectionChangedExecute()
         {
-            FetchTargetAndResults();
+            ScreenUpdate();
         }
         private void SelectedProgressLevelChangedExecute()
         {
@@ -414,7 +456,7 @@ namespace Split.ViewModels
             }
 
 
-            FetchTargetAndResults();
+            ScreenUpdate();
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
