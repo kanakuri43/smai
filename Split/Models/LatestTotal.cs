@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Split.Models
 {
-    public class LatesstAmount
+    public class LatestTotal
     {
         public Int32 EmployeeCode { get; set; }
         public decimal FinishedSales { get; set; }

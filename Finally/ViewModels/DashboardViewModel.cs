@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Data;
 using Finally.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finally.ViewModels
 {
@@ -23,6 +24,7 @@ namespace Finally.ViewModels
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<ProgressLevel> _progressLevels;
         private ObservableCollection<Case> _cases;
+        private ObservableCollection<LatestTotal> _latesstTotals;
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
@@ -93,6 +95,11 @@ namespace Finally.ViewModels
             get { return _progressLevels; }
             set { SetProperty(ref _progressLevels, value); }
         }
+        public ObservableCollection<LatestTotal> LatestTotals
+        {
+            get { return _latesstTotals; }
+            set { SetProperty(ref _latesstTotals, value); }
+        }
 
         public DelegateCommand YearSelectionChanged { get; }
         public DelegateCommand MonthSelectionChanged { get; }
@@ -143,6 +150,69 @@ namespace Finally.ViewModels
         }
         private void ScreenUpdate()
         {
+            using (var context = new AppDbContext())
+            {
+
+                var sql = @"
+                            SELECT
+                                * 
+                            FROM
+                                (select 月度 FROM Mカレンダ WHERE 期 = 86 GROUP BY 月度) CAL 
+                                LEFT JOIN ( 
+                                    SELECT
+                                        月度
+                                        , SUM(売上実績) as 売上目標
+                                        , SUM(粗利実績) as 粗利目標 
+                                    FROM
+                                        S進捗目標 
+                                    WHERE
+                                        進捗区分 = 1 
+                                        AND 社員コード <> 0 
+                                        and (社員コード = {0} OR (0 = {0})) 
+                                        and 部門コード between + {1} and {1} 
+                                    GROUP BY
+                                        月度
+                                ) AS TAR
+                                    ON CAL.月度 = TAR.月度 
+                                LEFT JOIN ( 
+                                    SELECT
+                                        D物件.受注月度
+                                        , D物件担当.社員コード
+                                        , ISNULL(SUM(D物件.売上金額), 0) AS 売上金額
+                                        , ISNULL(SUM(D物件.粗利金額), 0) AS 粗利金額 
+                                    FROM
+                                        D物件 
+                                        INNER JOIN D物件担当 
+                                            ON D物件担当.物件連番 = D物件.連番 
+                                            AND D物件担当.担当区分 = 1 
+                                        LEFT JOIN M物件確度 
+                                            ON M物件確度.コード = D物件.物件確度 
+                                    WHERE
+                                        D物件担当.社員コード = {0} 
+                                        AND D物件.削除区分 = 0 
+                                        AND M物件確度.物件確度区分 BETWEEN 30 AND 100 
+                                    GROUP BY
+                                        D物件担当.社員コード
+                                        , D物件.受注月度
+                                ) S 
+                                    ON CAL.月度 = S.受注月度 
+                        ";
+                var lt = context.Database.SqlQueryRaw<LatestTotal>(
+                                    sql,
+                                    this.SelectedEmployee.Code,
+                                    this.SelectedYear * 100 + this.SelectedMonth,
+                                    this.ProgressLevelMin.Level,
+                                    this.ProgressLevelMax.Level
+                                ).ToList();
+                if (lt == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.LatestTotals = new ObservableCollection<LatestTotal>(lt);
+                }
+            }
 
         }
 

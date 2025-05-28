@@ -143,7 +143,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Border Grid.Row="0" Grid.Column="0"
-                        BorderBrush="LightGray"
+                        BorderBrush="Silver"
                         BorderThickness="4,0,0,0"/>
                 <TextBlock Grid.Row="0" Grid.Column="0" 
                                        VerticalAlignment="Center"
@@ -166,7 +166,7 @@
                 <TextBlock Grid.Row="3" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding LatestAmounts[0].FinishedSales ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding LatestTotals[0].FinishedSales ,StringFormat={}{0:N0}}"/>
                 <TextBlock Grid.Row="3" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
@@ -189,7 +189,7 @@
                 <TextBlock Grid.Row="4" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding LatestAmounts[0].UnfinishedSales ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding LatestTotals[0].UnfinishedSales ,StringFormat={}{0:N0}}"/>
 
                 <TextBlock Grid.Row="5" Grid.Column="0" 
                                        VerticalAlignment="Center"
@@ -197,7 +197,7 @@
                 <TextBlock Grid.Row="5" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding LatestAmounts[0].TotalSales ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding LatestTotals[0].TotalSales ,StringFormat={}{0:N0}}"/>
                 <TextBlock Grid.Row="5" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
@@ -229,7 +229,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Border Grid.Row="0" Grid.Column="0"
-                        BorderBrush="LightGray"
+                        BorderBrush="Silver"
                         BorderThickness="4,0,0,0"/>
                 <TextBlock Grid.Row="0" Grid.Column="0" 
                                        VerticalAlignment="Center"
@@ -252,7 +252,7 @@
                 <TextBlock Grid.Row="3" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding LatestAmounts[0].FinishedProfit ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding LatestTotals[0].FinishedProfit ,StringFormat={}{0:N0}}"/>
                 <TextBlock Grid.Row="3" Grid.Column="2" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"
@@ -275,7 +275,7 @@
                 <TextBlock Grid.Row="4" Grid.Column="1" 
                             VerticalAlignment="Center"
                             TextAlignment="Right"
-                            Text="{Binding LatestAmounts[0].UnfinishedProfit ,StringFormat={}{0:N0}}"/>
+                            Text="{Binding LatestTotals[0].UnfinishedProfit ,StringFormat={}{0:N0}}"/>
 
                 <TextBlock Grid.Row="5" Grid.Column="0" 
                                        VerticalAlignment="Center"
@@ -283,7 +283,7 @@
                 <TextBlock Grid.Row="5" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
-                                       Text="{Binding LatestAmounts[0].TotalProfit ,StringFormat={}{0:N0}}"/>
+                                       Text="{Binding LatestTotals[0].TotalProfit ,StringFormat={}{0:N0}}"/>
                 <TextBlock Grid.Row="5" Grid.Column="2" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"
@@ -305,7 +305,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" 
-                        BorderBrush="LightGray"
+                        BorderBrush="Silver"
                         BorderThickness="4,0,0,0"/>
             <TextBlock Grid.Row="0" 
                        Margin="10,0,0,0"

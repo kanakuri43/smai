@@ -27,7 +27,7 @@ namespace Split.ViewModels
 
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
-        private ObservableCollection<LatesstAmount> _latesstAmounts;
+        private ObservableCollection<LatestTotal> _latestTotals;
         private ObservableCollection<ProgressLevel> _progressLevels;
         private ObservableCollection<Case> _cases;
 
@@ -157,10 +157,10 @@ namespace Split.ViewModels
             get { return _profitPreviousRate; }
             set { SetProperty(ref _profitPreviousRate, value); }
         }
-        public ObservableCollection<LatesstAmount> LatestAmounts
+        public ObservableCollection<LatestTotal> LatestTotals
         {
-            get { return _latesstAmounts; }
-            set { SetProperty(ref _latesstAmounts, value); }
+            get { return _latestTotals; }
+            set { SetProperty(ref _latestTotals, value); }
         }
 
         public ObservableCollection<ProgressLevel> ProgressLevels
@@ -219,7 +219,7 @@ namespace Split.ViewModels
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -330,7 +330,7 @@ namespace Split.ViewModels
                                     D物件担当.社員コード
                             ) U 
                                 ON F.社員コード = U.社員コード";
-                var la = context.Database.SqlQueryRaw<LatesstAmount>(
+                var la = context.Database.SqlQueryRaw<LatestTotal>(
                                     sql,
                                     this.SelectedEmployee.Code,
                                     this.SelectedYear * 100 + this.SelectedMonth,
@@ -339,39 +339,41 @@ namespace Split.ViewModels
                                 ).FirstOrDefault();
                 if (la == null)
                 {
+                    this.LatestTotals = new ObservableCollection<LatestTotal>();
                     SalesProgressRate = 0;
+                    SalesForecastProgressRate = 0;
                     ProfitProgressRate = 0;
-                    this.LatestAmounts = new ObservableCollection<LatesstAmount>();
-                    
-                    return;
+                    ProfitForecastProgressRate = 0;
+
                 }
                 else
                 { 
-                    this.LatestAmounts = new ObservableCollection<LatesstAmount> { la };
+                    this.LatestTotals = new ObservableCollection<LatestTotal> { la };
+
+                    // 達成率
+                    if (CurrentSalesTarget > 0)
+                    {
+                        SalesProgressRate = ((float)(LatestTotals[0].FinishedSales / CurrentSalesTarget) * 100);
+                        SalesForecastProgressRate = ((float)((LatestTotals[0].FinishedSales + LatestTotals[0].UnfinishedSales) / CurrentSalesTarget) * 100);
+                    }
+                    else
+                    {
+                        SalesProgressRate = 0;
+                        SalesForecastProgressRate = 0;
+                    }
+                    if (CurrentProfitTarget > 0)
+                    {
+                        ProfitProgressRate = ((float)(LatestTotals[0].FinishedProfit / CurrentProfitTarget) * 100);
+                        ProfitForecastProgressRate = ((float)((LatestTotals[0].FinishedProfit + LatestTotals[0].UnfinishedProfit) / CurrentProfitTarget) * 100);
+                    }
+                    else
+                    {
+                        ProfitProgressRate = 0;
+                        ProfitForecastProgressRate = 0;
+                    }
                 }
 
 
-                // 達成率
-                if (CurrentSalesTarget > 0)
-                {
-                    SalesProgressRate = ((float)(LatestAmounts[0].FinishedSales / CurrentSalesTarget) * 100);
-                    SalesForecastProgressRate = ((float)((LatestAmounts[0].FinishedSales + LatestAmounts[0].UnfinishedSales) / CurrentSalesTarget) * 100);
-                }
-                else
-                {
-                    SalesProgressRate = 0;
-                    SalesForecastProgressRate = 0;
-                }
-                if (CurrentProfitTarget > 0)
-                {
-                    ProfitProgressRate = ((float)(LatestAmounts[0].FinishedProfit / CurrentProfitTarget) * 100);
-                    ProfitForecastProgressRate = ((float)((LatestAmounts[0].FinishedProfit + LatestAmounts[0].UnfinishedProfit) / CurrentProfitTarget) * 100);
-                }
-                else
-                {
-                    ProfitProgressRate = 0;
-                    ProfitForecastProgressRate = 0;
-                }
 
                 // 案件リスト
                 sql = @"
