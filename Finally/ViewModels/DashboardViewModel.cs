@@ -131,7 +131,7 @@ namespace Finally.ViewModels
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -147,15 +147,31 @@ namespace Finally.ViewModels
 
             }
 
+            FetchEmployeeList();
+
+            ScreenUpdate();
+
         }
         private void ScreenUpdate()
         {
+            // 社員未選択なら即return
+            if (this.SelectedEmployee == null)
+            {
+                return;
+            }
+
             using (var context = new AppDbContext())
             {
 
                 var sql = @"
                             SELECT
-                                * 
+                                CAL.月度 AS YearMonth
+                                , TAR.売上目標 AS TargetSales
+                                , TAR.粗利目標 AS TargetProfit
+                                , S.社員コード AS EmployeeCode
+                                , S.売上金額 AS FinishedSales
+                                , S.粗利金額 AS FinishedProfit
+
                             FROM
                                 (select 月度 FROM Mカレンダ WHERE 期 = 86 GROUP BY 月度) CAL 
                                 LEFT JOIN ( 

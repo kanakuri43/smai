@@ -8,20 +8,13 @@ namespace Finally.Models
 {
     public class LatestTotal
     {
+        public int YearMonth { get; set; }
         public Int32 EmployeeCode { get; set; }
+        public decimal TargetSales { get; set; }
+        public decimal TargetProfit { get; set; }
         public decimal FinishedSales { get; set; }
         public decimal FinishedProfit { get; set; }
-        public decimal UnfinishedSales { get; set; }
-        public decimal UnfinishedProfit { get; set; }
 
-        public decimal TotalSales
-        {
-            get { return FinishedSales + UnfinishedSales; }
-        }
-        public decimal TotalProfit
-        {
-            get { return FinishedProfit + UnfinishedProfit; }
-        }
 
     }
 }
