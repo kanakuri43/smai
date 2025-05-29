@@ -219,7 +219,7 @@ namespace Split.ViewModels
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -374,13 +374,12 @@ namespace Split.ViewModels
                     }
                 }
 
-
-
                 // 案件リスト
                 sql = @"
                         SELECT
                             D物件.*
                             , 記号
+                            , 物件確度区分
                         FROM
                             D物件 
                             INNER JOIN D物件担当 
@@ -408,7 +407,8 @@ namespace Split.ViewModels
                 }
                 else
                 {
-                    this.Cases = new ObservableCollection<Case>(c);
+                    this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                    ;
                 }
 
             }

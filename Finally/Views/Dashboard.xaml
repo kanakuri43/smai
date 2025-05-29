@@ -6,12 +6,18 @@
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              prism:ViewModelLocator.AutoWireViewModel="True">
+    <UserControl.Resources>
+        <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid Margin="8" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
+        <Grid Grid.Column="0" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
@@ -64,8 +70,6 @@
 
             <ListBox Grid.Row="2"
                      ItemsSource="{Binding Employees}"
-                     SelectedValuePath="Code"
-                     SelectedValue="{Binding SelectedEmployeeCode}"
                      SelectedItem="{Binding SelectedEmployee, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -121,8 +125,9 @@
               Margin="20,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
-                <RowDefinition Height="350"/>
+                <RowDefinition Height="340"/>
                 <RowDefinition Height="70"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
@@ -153,7 +158,8 @@
             </Grid>
             <ListView Grid.Row="1" 
                       Margin="0,10,0,0"
-                      ItemsSource="{Binding MonthlyTotals}"   >
+                      ItemsSource="{Binding MonthlyTotals}"   
+                      SelectedItem="{Binding SelectedMonthlyTotal, Mode=TwoWay}">
 
                 <ListView.View>
                     <GridView>
@@ -221,8 +227,10 @@
                     </GridView>
                 </ListView.View>
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction 
+                            Command="{Binding MonthlyTotalSelectionChanged}" 
+                            TriggerParameterPath="AddedItems"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListView>
@@ -231,7 +239,7 @@
                       ItemsSource="{Binding YearlyTotals}"   >
 
                 <ListView.View>
-                    <GridView>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">
                         <GridViewColumn Header="年月" DisplayMemberBinding="{Binding YearMonth}" Width="50"/>
                         <GridViewColumn Header="目標" Width="80">
                             <GridViewColumn.CellTemplate>
@@ -301,6 +309,53 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListView>
+            <Border Grid.Row="3" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+            <TextBlock Grid.Row="3"
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="受注予定案件"/>
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <ListView Grid.Column="0" 
+                      Margin="0,10,0,0"
+                      ItemsSource="{Binding Cases}" Grid.RowSpan="2"    >
+
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                            <GridViewColumn Header="案件" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                            <GridViewColumn Header="売上" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="粗利" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ListView>
+
+            </Grid>
 
         </Grid>
     </Grid>

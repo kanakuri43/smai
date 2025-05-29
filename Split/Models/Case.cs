@@ -29,6 +29,8 @@ namespace Split.Models
         public decimal ProfitPrice { get; set; }
         [Column("記号")]
         public string Symbol { get; set; }
+        [Column("物件確度区分")]
+        public byte Level { get; set; }
 
 
     }

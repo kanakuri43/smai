@@ -16,7 +16,6 @@ namespace Finally.Models
         public byte State { get; set; }
         [Column("名称")]
         public string Name { get; set; }
-
         [Column("受注月度")]
         public int OrderYearMonth { get; set; }
         [Column("売上月度")]
@@ -29,6 +28,9 @@ namespace Finally.Models
         public decimal ProfitPrice { get; set; }
         [Column("記号")]
         public string Symbol { get; set; }
+        [Column("物件確度区分")]
+        public byte Level { get; set; }
+
 
 
     }

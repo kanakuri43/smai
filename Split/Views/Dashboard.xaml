@@ -302,8 +302,7 @@
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
-                <RowDefinition Height="136*"/>
-                <RowDefinition Height="79*"/>
+                <RowDefinition />
             </Grid.RowDefinitions>
             <Border Grid.Row="0" 
                         BorderBrush="Silver"

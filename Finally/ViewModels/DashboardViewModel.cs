@@ -20,6 +20,7 @@ namespace Finally.ViewModels
         private ObservableCollection<int> _months;
         private int _selectedMonth;
         private int _period;
+        private MonthlyTotal _selectedMonthlyTotal;
 
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
@@ -60,6 +61,11 @@ namespace Finally.ViewModels
         {
             get { return _period; }
             set { SetProperty(ref _period, value); }
+        }
+        public MonthlyTotal SelectedMonthlyTotal
+        {
+            get { return _selectedMonthlyTotal; }
+            set { SetProperty(ref _selectedMonthlyTotal, value); }
         }
 
         public Section SelectedSection
@@ -118,12 +124,18 @@ namespace Finally.ViewModels
             get { return _yearlyTotals; }
             set { SetProperty(ref _yearlyTotals, value); }
         }
+        public ObservableCollection<Case> Cases
+        {
+            get { return _cases; }
+            set { SetProperty(ref _cases, value); }
+        }
 
         public DelegateCommand YearSelectionChanged { get; }
         public DelegateCommand MonthSelectionChanged { get; }
         public DelegateCommand SectionSelectionChanged { get; }
         public DelegateCommand EmployeeSelectionChanged { get; }
         public DelegateCommand SelectedProgressLevelChanged { get; }
+        public DelegateCommand MonthlyTotalSelectionChanged { get; }
 
         public DashboardViewModel(IRegionManager regionManager)
         {
@@ -133,6 +145,7 @@ namespace Finally.ViewModels
             SectionSelectionChanged = new DelegateCommand(SectionSelectionChangedExecute);
             EmployeeSelectionChanged = new DelegateCommand(EmployeeSelectionChangedExecute);
             SelectedProgressLevelChanged = new DelegateCommand(SelectedProgressLevelChangedExecute);
+            MonthlyTotalSelectionChanged = new DelegateCommand(MonthlyTotalSelectionChangedExecute);
 
             // 年リスト
             int currentYear = DateTime.Now.Year;
@@ -153,7 +166,7 @@ namespace Finally.ViewModels
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
                         );
-                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 11010);
+                this.SelectedSection = context.Sections.FirstOrDefault(s => s.Code == 21130);
 
                 // 物権確度
                 this.ProgressLevels = new ObservableCollection<ProgressLevel>(
@@ -172,10 +185,58 @@ namespace Finally.ViewModels
 
             FetchEmployeeList();
 
-            ScreenUpdate();
+            UpdateScreen();
 
         }
-        private void ScreenUpdate()
+
+        private void UpdateCases()
+        {
+            using (var context = new AppDbContext())
+            {
+                // 案件リスト
+                if (this.SelectedMonthlyTotal != null)
+                {
+
+                    var sql = @"
+                            SELECT
+                                D物件.*
+                                , 記号
+                                , 物件確度区分
+                            FROM
+                                D物件 
+                                INNER JOIN D物件担当 
+                                    ON D物件担当.物件連番 = D物件.連番 
+                                    AND D物件担当.担当区分 = 1 
+                                LEFT JOIN M物件確度 
+                                    ON M物件確度.コード = D物件.物件確度 
+                            WHERE
+                                D物件担当.社員コード = {0} 
+                                AND D物件.受注月度 = {1} 
+                                AND D物件.削除区分 = 0 
+                                AND M物件確度.物件確度区分 >= {2}
+                                AND M物件確度.物件確度区分 <= {3}
+                            ";
+                    var c = context.Database.SqlQueryRaw<Case>(
+                                        sql,
+                                        this.SelectedEmployee.Code,
+                                        this.SelectedMonthlyTotal.YearMonth,
+                                        this.ProgressLevelMin.Level,
+                                        this.ProgressLevelMax.Level
+                                    ).ToList();
+                    if (c == null)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                    }
+
+                }
+
+            } 
+        }
+        private void UpdateScreen()
         {
             // 社員未選択なら即return
             if (this.SelectedEmployee == null)
@@ -297,6 +358,10 @@ namespace Finally.ViewModels
                     };
                     this.YearlyTotals = new ObservableCollection<MonthlyTotal> { yt };
                 }
+
+                this.Cases = new ObservableCollection<Case>();
+
+
             }
 
         }
@@ -316,11 +381,11 @@ namespace Finally.ViewModels
 
         private void YearSelectionChangedExecute()
         {
-            ScreenUpdate();
+            UpdateScreen();
         }
         private void MonthSelectionChangedExecute()
         {
-            ScreenUpdate();
+            UpdateScreen();
         }
         private void SectionSelectionChangedExecute()
         {
@@ -328,7 +393,11 @@ namespace Finally.ViewModels
         }
         private void EmployeeSelectionChangedExecute()
         {
-            ScreenUpdate();
+            UpdateScreen();
+        }
+        private void MonthlyTotalSelectionChangedExecute()
+        {
+            UpdateCases();
         }
         private void SelectedProgressLevelChangedExecute()
         {
@@ -346,7 +415,7 @@ namespace Finally.ViewModels
                 ProgressLevelMin = null; // 範囲外の場合はnullを設定
             }
 
-            ScreenUpdate();
+            UpdateScreen();
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)
