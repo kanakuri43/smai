@@ -15,7 +15,6 @@ namespace Split.Models
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Case> Cases { get; set; }
-        public DbSet<CaseStaff> CaseStaffs { get; set; }
         public DbSet<ProgressLevel> ProgressLevels { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -41,10 +40,6 @@ namespace Split.Models
             modelBuilder.Entity<Section>()
                   .ToTable("M部門")
                   .HasKey(s => new { s.Code });
-
-            modelBuilder.Entity<CaseStaff>()
-                  .ToTable("D物件担当")
-                  .HasKey(cs => new { cs.CaseId, cs.EmployeeCode });
 
         }
 

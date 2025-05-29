@@ -14,6 +14,7 @@ namespace Finally.Models
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<ProgressLevel> ProgressLevels { get; set; }
+        public DbSet<Calendar> Calendars { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -32,6 +33,10 @@ namespace Finally.Models
             modelBuilder.Entity<Section>()
                   .ToTable("M部門")
                   .HasKey(s => new { s.Code });
+
+            modelBuilder.Entity<Calendar>()
+                  .ToTable("Mカレンダ")
+                  .HasKey(c => new { c.Date });
 
 
         }

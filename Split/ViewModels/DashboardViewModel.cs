@@ -231,7 +231,8 @@ namespace Split.ViewModels
                     .OrderByDescending(pl => pl.Level)
                     .ToList();
                 ProgressLevelMax = sortedProgressLevels[0];
-                ProgressLevelMin = sortedProgressLevels[0];
+                SelectedProgressLevel = 4;
+                ProgressLevelMin = sortedProgressLevels[SelectedProgressLevel];
 
             }
 
@@ -457,7 +458,6 @@ namespace Split.ViewModels
             {
                 ProgressLevelMin = null; // 範囲外の場合はnullを設定
             }
-
 
             ScreenUpdate();
         }

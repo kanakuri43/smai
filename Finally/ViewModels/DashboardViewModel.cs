@@ -19,12 +19,15 @@ namespace Finally.ViewModels
         private int _selectedYear;
         private ObservableCollection<int> _months;
         private int _selectedMonth;
+        private int _period;
 
         private ObservableCollection<Section> _sections;
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<ProgressLevel> _progressLevels;
         private ObservableCollection<Case> _cases;
-        private ObservableCollection<LatestTotal> _latesstTotals;
+        private ObservableCollection<MonthlyTotal> _monthlyTotals;
+        private ObservableCollection<MonthlyTotal> _yearlyTotals;
+        private ObservableCollection<Calendar> _calendars;
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
@@ -53,6 +56,11 @@ namespace Finally.ViewModels
             get { return _selectedMonth; }
             set { SetProperty(ref _selectedMonth, value); }
         }
+        public int Period
+        {
+            get { return _period; }
+            set { SetProperty(ref _period, value); }
+        }
 
         public Section SelectedSection
         {
@@ -75,6 +83,11 @@ namespace Finally.ViewModels
             get { return _employees; }
             set { SetProperty(ref _employees, value); }
         }
+        public ObservableCollection<Calendar> Calendars
+        {
+            get { return _calendars; }
+            set { SetProperty(ref _calendars, value); }
+        }
         public ProgressLevel ProgressLevelMin
         {
             get { return _progressLevelMin; }
@@ -95,10 +108,15 @@ namespace Finally.ViewModels
             get { return _progressLevels; }
             set { SetProperty(ref _progressLevels, value); }
         }
-        public ObservableCollection<LatestTotal> LatestTotals
+        public ObservableCollection<MonthlyTotal> MonthlyTotals
         {
-            get { return _latesstTotals; }
-            set { SetProperty(ref _latesstTotals, value); }
+            get { return _monthlyTotals; }
+            set { SetProperty(ref _monthlyTotals, value); }
+        }
+        public ObservableCollection<MonthlyTotal> YearlyTotals
+        {
+            get { return _yearlyTotals; }
+            set { SetProperty(ref _yearlyTotals, value); }
         }
 
         public DelegateCommand YearSelectionChanged { get; }
@@ -125,8 +143,12 @@ namespace Finally.ViewModels
             Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
             this.SelectedMonth = DateTime.Now.Month;
 
+
             using (var context = new AppDbContext())
             {
+                // Calendar
+                this.Calendars = new ObservableCollection<Calendar>(context.Calendars.ToList());
+
                 // 部署リスト
                 Sections = new ObservableCollection<Section>(
                             context.Sections.Where(s => s.State == 0).ToList()
@@ -143,7 +165,8 @@ namespace Finally.ViewModels
                     .OrderByDescending(pl => pl.Level)
                     .ToList();
                 ProgressLevelMax = sortedProgressLevels[0];
-                ProgressLevelMin = sortedProgressLevels[0];
+                SelectedProgressLevel = 4;
+                ProgressLevelMin = sortedProgressLevels[SelectedProgressLevel];
 
             }
 
@@ -160,20 +183,28 @@ namespace Finally.ViewModels
                 return;
             }
 
+
+
             using (var context = new AppDbContext())
             {
+                var calendarRecord = context.Calendars.FirstOrDefault(c => c.Date == this.SelectedYear * 10000 + 801);
+                if (calendarRecord != null)
+                {
+                    this.Period = calendarRecord.Period; // ここでYourFieldNameを取得したいフィールド名に置き換えてください
+                }
 
                 var sql = @"
                             SELECT
                                 CAL.月度 AS YearMonth
                                 , TAR.売上目標 AS TargetSales
                                 , TAR.粗利目標 AS TargetProfit
-                                , S.社員コード AS EmployeeCode
-                                , S.売上金額 AS FinishedSales
-                                , S.粗利金額 AS FinishedProfit
-
+                                , ISNULL(S.社員コード, 0) AS EmployeeCode
+                                , ISNULL(S.FinishedSales, 0) AS FinishedSales
+                                , ISNULL(S.FinishedProfit, 0) AS FinishedProfit 
+                                , ISNULL(U.UnfinishedSales, 0) AS UnfinishedSales
+                                , ISNULL(U.UnfinishedProfit, 0) AS UnfinishedProfit 
                             FROM
-                                (select 月度 FROM Mカレンダ WHERE 期 = 86 GROUP BY 月度) CAL 
+                                (select 月度 FROM Mカレンダ WHERE 期 = {4} GROUP BY 月度) CAL 
                                 LEFT JOIN ( 
                                     SELECT
                                         月度
@@ -185,17 +216,17 @@ namespace Finally.ViewModels
                                         進捗区分 = 1 
                                         AND 社員コード <> 0 
                                         and (社員コード = {0} OR (0 = {0})) 
-                                        and 部門コード between + {1} and {1} 
+                                        and 部門コード between {1} and {1} 
                                     GROUP BY
                                         月度
-                                ) AS TAR
+                                ) AS TAR 
                                     ON CAL.月度 = TAR.月度 
                                 LEFT JOIN ( 
                                     SELECT
                                         D物件.受注月度
                                         , D物件担当.社員コード
-                                        , ISNULL(SUM(D物件.売上金額), 0) AS 売上金額
-                                        , ISNULL(SUM(D物件.粗利金額), 0) AS 粗利金額 
+                                        , ISNULL(SUM(D物件.売上金額), 0) AS FinishedSales
+                                        , ISNULL(SUM(D物件.粗利金額), 0) AS FinishedProfit 
                                     FROM
                                         D物件 
                                         INNER JOIN D物件担当 
@@ -210,15 +241,40 @@ namespace Finally.ViewModels
                                     GROUP BY
                                         D物件担当.社員コード
                                         , D物件.受注月度
-                                ) S 
-                                    ON CAL.月度 = S.受注月度 
+                                ) AS S 
+                                    ON CAL.月度 = S.受注月度
+                                LEFT JOIN ( 
+                                    SELECT
+                                        D物件.受注月度
+                                        , D物件担当.社員コード
+                                        , ISNULL(SUM(D物件.売上金額), 0) AS UnfinishedSales
+                                        , ISNULL(SUM(D物件.粗利金額), 0) AS UnfinishedProfit 
+                                    FROM
+                                        D物件 
+                                        INNER JOIN D物件担当 
+                                            ON D物件担当.物件連番 = D物件.連番 
+                                            AND D物件担当.担当区分 = 1 
+                                        LEFT JOIN M物件確度 
+                                            ON M物件確度.コード = D物件.物件確度 
+                                    WHERE
+                                        D物件担当.社員コード = {0}
+                                        AND D物件.削除区分 = 0 
+                                        AND M物件確度.物件確度区分 >= {2}
+                                        AND M物件確度.物件確度区分 <= {3}
+                                    GROUP BY
+                                        D物件担当.社員コード
+                                        , D物件.受注月度
+                                ) U 
+                                    ON CAL.月度 = U.受注月度
+
                         ";
-                var lt = context.Database.SqlQueryRaw<LatestTotal>(
+                var lt = context.Database.SqlQueryRaw<MonthlyTotal>(
                                     sql,
                                     this.SelectedEmployee.Code,
-                                    this.SelectedYear * 100 + this.SelectedMonth,
+                                    this.SelectedSection.Code,
                                     this.ProgressLevelMin.Level,
-                                    this.ProgressLevelMax.Level
+                                    this.ProgressLevelMax.Level,
+                                    this.Period
                                 ).ToList();
                 if (lt == null)
                 {
@@ -226,7 +282,20 @@ namespace Finally.ViewModels
                 }
                 else
                 {
-                    this.LatestTotals = new ObservableCollection<LatestTotal>(lt);
+                    this.MonthlyTotals = new ObservableCollection<MonthlyTotal>(lt);
+                    var yt = new MonthlyTotal
+                    {
+                        YearMonth = this.SelectedYear,
+                        EmployeeCode = this.SelectedEmployee.Code,
+                        TargetSales = MonthlyTotals.Sum(s => s.TargetSales),
+                        TargetProfit = MonthlyTotals.Sum(s => s.TargetProfit),
+                        FinishedSales = MonthlyTotals.Sum(s => s.FinishedSales),
+                        FinishedProfit = MonthlyTotals.Sum(s => s.FinishedProfit),
+                        UnfinishedSales = MonthlyTotals.Sum(s => s.UnfinishedSales),
+                        UnfinishedProfit = MonthlyTotals.Sum(s => s.UnfinishedProfit)
+
+                    };
+                    this.YearlyTotals = new ObservableCollection<MonthlyTotal> { yt };
                 }
             }
 
@@ -263,7 +332,19 @@ namespace Finally.ViewModels
         }
         private void SelectedProgressLevelChangedExecute()
         {
-
+            var sortedProgressLevels = ProgressLevels
+                .Where(pl => pl.State == 0 && pl.Level <= 20 && pl.Level >= 1)
+                .OrderByDescending(pl => pl.Level)
+                .ToList();
+            // 選択されたProgressLevelを取得
+            if (SelectedProgressLevel >= 0 && SelectedProgressLevel < sortedProgressLevels.Count)
+            {
+                ProgressLevelMin = sortedProgressLevels[SelectedProgressLevel];
+            }
+            else
+            {
+                ProgressLevelMin = null; // 範囲外の場合はnullを設定
+            }
 
             ScreenUpdate();
         }
