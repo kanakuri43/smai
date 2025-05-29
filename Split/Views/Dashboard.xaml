@@ -297,6 +297,24 @@
 
             </Grid>
 
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Text="粗利率"/>
+            </Grid>
 
         </Grid>
         <Grid Grid.Column="2">

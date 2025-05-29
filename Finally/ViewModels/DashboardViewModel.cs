@@ -264,6 +264,7 @@ namespace Finally.ViewModels
                                 , ISNULL(S.FinishedProfit, 0) AS FinishedProfit 
                                 , ISNULL(U.UnfinishedSales, 0) AS UnfinishedSales
                                 , ISNULL(U.UnfinishedProfit, 0) AS UnfinishedProfit 
+                                , 0 AS MiscIncome 
                             FROM
                                 (select 月度 FROM Mカレンダ WHERE 期 = {4} GROUP BY 月度) CAL 
                                 LEFT JOIN ( 

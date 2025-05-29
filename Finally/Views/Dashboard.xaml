@@ -133,7 +133,7 @@
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="340"/>
+                    <ColumnDefinition Width="320"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Border Grid.Column="1" 
@@ -185,7 +185,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="達成率" Width="100">
+                        <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Controls:MetroProgressBar Value="{Binding SalesProgressRate, Mode=OneWay}"
@@ -194,33 +194,57 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="目標" Width="80">
+                        <GridViewColumn Header="目標" Width="70">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TargetProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="実績" Width="80">
+                        <GridViewColumn Header="実績" Width="70">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="予定" Width="80">
+                        <GridViewColumn Header="予定" Width="70">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding UnfinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="達成率" Width="100">
+                        <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Controls:MetroProgressBar Value="{Binding ProfitProgressRate, Mode=OneWay}"
                                                                Maximum="100"
                                                                />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="粗利率" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding GrossMarginRate ,StringFormat={}{0:N0} %}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="雑収入" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経費" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -262,7 +286,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="達成率" Width="100">
+                        <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Controls:MetroProgressBar Value="{Binding SalesProgressRate, Mode=OneWay}"
@@ -271,33 +295,57 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="目標" Width="80">
+                        <GridViewColumn Header="目標" Width="70">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding TargetProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="実績" Width="80">
+                        <GridViewColumn Header="実績" Width="70">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding FinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="予定" Width="80">
+                        <GridViewColumn Header="予定" Width="70">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding UnfinishedProfit, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="達成率" Width="100">
+                        <GridViewColumn Header="達成率" Width="80">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Controls:MetroProgressBar Value="{Binding ProfitProgressRate, Mode=OneWay}"
                                                                Maximum="100"
                                                                />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="粗利率" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding GrossMarginRate ,StringFormat={}{0:N0} %}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="雑収入" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経費" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

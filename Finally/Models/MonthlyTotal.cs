@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlzEx.Standard;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,11 @@ namespace Finally.Models
         {
             get { return ((FinishedProfit + UnfinishedProfit) / TargetProfit) * 100; }
         }
-
+        public decimal GrossMarginRate
+        {
+            get { return (TotalProfit / TotalSales) * 100; }
+        }
+        public int MiscIncome { get; set; }
 
 
     }

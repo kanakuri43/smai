@@ -22,6 +22,10 @@ namespace Split.Models
         {
             get { return FinishedProfit + UnfinishedProfit; }
         }
+        public decimal GrossMarginRate
+        {
+            get { return (TotalProfit / TotalSales) * 100; }
+        }
 
     }
 }
