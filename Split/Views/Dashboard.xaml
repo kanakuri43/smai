@@ -209,8 +209,7 @@
                                                        Value="{Binding SalesForecastProgressRate}" />
 
             </Grid>
-            <Grid Grid.Row="1"
-                  >
+            <Grid Grid.Row="1"     >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
@@ -300,20 +299,54 @@
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="60"/>
-                    <ColumnDefinition Width="80"/>
-                    <ColumnDefinition Width="60"/>
-                    <ColumnDefinition Width="80"/>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0"
-                           VerticalAlignment="Center"
-                           Text="粗利率"/>
+                <Border Grid.Row="0" Grid.Column="0"
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+                <TextBlock Grid.Row="0" Grid.Column="0" 
+                                       VerticalAlignment="Center"
+                                       Margin="10,0,0,0"
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       Text="パイプライン"/>
+                <ListView Grid.Row="1" 
+                      Margin="0,10,0,10"
+                      ItemsSource="{Binding CustomersHistories}" >
+
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="確度" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding OrderYearMonth}" HorizontalAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="件数" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="達成率" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Controls:MetroProgressBar Value="{Binding ProfitProgressRate, Mode=OneWay}"
+                                                               Maximum="100"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ListView>
+
             </Grid>
 
         </Grid>
