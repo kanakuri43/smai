@@ -134,6 +134,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="320"/>
+                    <ColumnDefinition Width="290"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Border Grid.Column="1" 
@@ -144,7 +145,7 @@
                        VerticalAlignment="Center"
                        FontWeight="Bold"
                        FontSize="16"
-                       Text="売上"/>
+                       Text="売上高"/>
                 <Border Grid.Column="2" 
                         BorderBrush="Silver"
                         BorderThickness="4,0,0,0"/>
@@ -153,7 +154,10 @@
                        VerticalAlignment="Center"
                        FontWeight="Bold"
                        FontSize="16"
-                       Text="粗利"/>
+                       Text="売上総利益"/>
+                <Border Grid.Column="3" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
 
             </Grid>
             <ListView Grid.Row="1" 
@@ -189,11 +193,11 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Controls:MetroProgressBar Value="{Binding SalesProgressRate, Mode=OneWay}"
-                                                               Maximum="100"
-                                                               />
+                                                               Maximum="100"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
+                        
                         <GridViewColumn Header="目標" Width="70">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -219,20 +223,11 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Controls:MetroProgressBar Value="{Binding ProfitProgressRate, Mode=OneWay}"
-                                                               Maximum="100"
-                                                               />
+                                                               Maximum="100"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="粗利率" Width="60">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding GrossMarginRate ,StringFormat={}{0:N0} %}" 
-                                               HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="雑収入" Width="60">
+                        <GridViewColumn Header="経費" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
@@ -240,7 +235,23 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="経費" Width="60">
+                        <GridViewColumn Header="営業利益" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="営業外" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経常利益" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
@@ -325,15 +336,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="粗利率" Width="60">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding GrossMarginRate ,StringFormat={}{0:N0} %}" 
-                                               HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="雑収入" Width="60">
+                        <GridViewColumn Header="経費" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
@@ -341,7 +344,23 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="経費" Width="60">
+                        <GridViewColumn Header="営業利益" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="営業外" Width="60">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
+                                               HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="経常利益" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding MiscIncome ,StringFormat={}{0:#,0}}" 
