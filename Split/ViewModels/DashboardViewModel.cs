@@ -30,6 +30,7 @@ namespace Split.ViewModels
         private ObservableCollection<LatestTotal> _latestTotals;
         private ObservableCollection<ProgressLevel> _progressLevels;
         private ObservableCollection<Case> _cases;
+        private ObservableCollection<Case> _customersHistories;
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
@@ -172,6 +173,11 @@ namespace Split.ViewModels
         {
             get { return _cases; }
             set { SetProperty(ref _cases, value); }
+        }
+        public ObservableCollection<Case> CustomersHistories
+        {
+            get { return _customersHistories; }
+            set { SetProperty(ref _customersHistories, value); }
         }
 
         public CollectionView ResultCollectionView
@@ -378,6 +384,8 @@ namespace Split.ViewModels
                 sql = @"
                         SELECT
                             D物件.*
+                            , C.連番 AS CustomerCode
+                            , C.名称 AS CustomerName
                             , 記号
                             , 物件確度区分
                         FROM
@@ -387,6 +395,10 @@ namespace Split.ViewModels
                                 AND D物件担当.担当区分 = 1 
                             LEFT JOIN M物件確度 
                                 ON M物件確度.コード = D物件.物件確度 
+							LEFT JOIN D物件顧客 CC
+							    ON D物件.連番 = CC.物件連番
+							LEFT JOIN D顧客 C
+							    ON CC.顧客連番 = C.連番
                         WHERE
                             D物件担当.社員コード = {0} 
                             AND D物件.受注月度 = {1} 

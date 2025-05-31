@@ -15,7 +15,9 @@ namespace Split.Models
         [Column("削除区分")]
         public byte State { get; set; }
         [Column("名称")]
-        public string Name { get; set; }
+        public string CaseName { get; set; }
+        public int CustomerCode { get; set; }
+        public string CustomerName { get; set; }
 
         [Column("受注月度")]
         public int OrderYearMonth { get; set; }
