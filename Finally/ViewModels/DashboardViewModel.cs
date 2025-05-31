@@ -150,7 +150,7 @@ namespace Finally.ViewModels
             // 年リスト
             int currentYear = DateTime.Now.Year;
             Years = new ObservableCollection<int>(Enumerable.Range(currentYear - 1, 3));
-            this.SelectedYear = currentYear;
+            //this.SelectedYear = currentYear;
 
             // 月リスト
             Months = new ObservableCollection<int>(Enumerable.Range(1, 12));
@@ -159,8 +159,25 @@ namespace Finally.ViewModels
 
             using (var context = new AppDbContext())
             {
-                // Calendar
-                this.Calendars = new ObservableCollection<Calendar>(context.Calendars.ToList());
+                // 今日の期を求める
+                int todayDate = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
+                var c1 = context.Calendars.FirstOrDefault(c => c.Date == todayDate);
+                if (c1 != null)
+                {
+                    this.Period = c1.Period; 
+                }
+                // 期の最初の日付の年
+                var c2 = context.Calendars
+                           .Where(c => c.Period == this.Period)
+                           .OrderBy(c => c.Date)
+                           .FirstOrDefault();
+
+                if (c2 != null)
+                {
+                    DateTime date = DateTime.ParseExact(c2.Date.ToString(), "yyyyMMdd", null);
+                    this.SelectedYear = date.Year;
+                }
+
 
                 // 部署リスト
                 Sections = new ObservableCollection<Section>(
@@ -248,11 +265,6 @@ namespace Finally.ViewModels
 
             using (var context = new AppDbContext())
             {
-                var calendarRecord = context.Calendars.FirstOrDefault(c => c.Date == this.SelectedYear * 10000 + 801);
-                if (calendarRecord != null)
-                {
-                    this.Period = calendarRecord.Period; // ここでYourFieldNameを取得したいフィールド名に置き換えてください
-                }
 
                 var sql = @"
                             SELECT

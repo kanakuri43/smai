@@ -35,7 +35,7 @@ namespace Finally.Models
         }
         public decimal GrossMarginRate
         {
-            get { return (TotalProfit / TotalSales) * 100; }
+            get { return TotalSales == 0 ? 0 : (TotalProfit / TotalSales) * 100; }
         }
         public int MiscIncome { get; set; }
 
