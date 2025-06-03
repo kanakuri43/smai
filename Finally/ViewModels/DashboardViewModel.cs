@@ -171,7 +171,6 @@ namespace Finally.ViewModels
                            .Where(c => c.Period == this.Period)
                            .OrderBy(c => c.Date)
                            .FirstOrDefault();
-
                 if (c2 != null)
                 {
                     DateTime date = DateTime.ParseExact(c2.Date.ToString(), "yyyyMMdd", null);

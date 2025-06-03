@@ -29,8 +29,9 @@ namespace Split.ViewModels
         private ObservableCollection<Employee> _employees;
         private ObservableCollection<LatestTotal> _latestTotals;
         private ObservableCollection<ProgressLevel> _progressLevels;
-        private ObservableCollection<Case> _cases;
+        private ObservableCollection<Case> _casesByIndividual;
         private ObservableCollection<Case> _customersHistories;
+        private ObservableCollection<Pipeline> _pipelines;
 
         private Section _selectedSection;
         private Employee _selectedEmployee;
@@ -169,15 +170,21 @@ namespace Split.ViewModels
             get { return _progressLevels; }
             set { SetProperty(ref _progressLevels, value); }
         }
-        public ObservableCollection<Case> Cases
+        public ObservableCollection<Case> CasesByIndividual
         {
-            get { return _cases; }
-            set { SetProperty(ref _cases, value); }
+            get { return _casesByIndividual; }
+            set { SetProperty(ref _casesByIndividual, value); }
         }
         public ObservableCollection<Case> CustomersHistories
         {
             get { return _customersHistories; }
             set { SetProperty(ref _customersHistories, value); }
+        }
+
+        public ObservableCollection<Pipeline> Pipelines
+        {
+            get { return _pipelines; }
+            set { SetProperty(ref _pipelines, value); }
         }
 
         public CollectionView ResultCollectionView
@@ -419,7 +426,59 @@ namespace Split.ViewModels
                 }
                 else
                 {
-                    this.Cases = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                    this.CasesByIndividual = new ObservableCollection<Case>(c.OrderByDescending(c => c.Level));
+                    ;
+                }
+
+                // パイプライン
+                sql = @"
+                        WITH TotalCount AS (
+                            SELECT COUNT(D物件担当.物件連番) AS TotalCaseCount
+                            FROM M物件確度 
+                                LEFT JOIN D物件 
+                                    ON M物件確度.コード = D物件.物件確度 
+                                    AND D物件.削除区分 = 0 
+                                LEFT JOIN D物件担当 
+                                    ON D物件担当.物件連番 = D物件.連番 
+                                    AND D物件担当.担当区分 = 1 
+                                    AND D物件担当.社員コード = {0} 
+                            WHERE M物件確度.削除区分 = 0 
+                                AND M物件確度.物件確度区分 BETWEEN 1 AND 20
+                        )
+
+                        -- メインクエリ：物件確度区分別の集計
+                        SELECT
+                            物件確度区分 AS Level,
+                            MIN(M物件確度.記号) AS Name,
+                            COUNT(D物件担当.物件連番) AS CaseCount,
+                            (SELECT TotalCaseCount FROM TotalCount) AS TotalCaseCount
+                        FROM M物件確度 
+                            LEFT JOIN D物件 
+                                ON M物件確度.コード = D物件.物件確度 
+                                AND D物件.削除区分 = 0 
+                            LEFT JOIN D物件担当 
+                                ON D物件担当.物件連番 = D物件.連番 
+                                AND D物件担当.担当区分 = 1 
+                                AND D物件担当.社員コード = {0} 
+                        WHERE M物件確度.削除区分 = 0 
+                            AND M物件確度.物件確度区分 BETWEEN 1 AND 20 
+                        GROUP BY 物件確度区分 
+                        ORDER BY 物件確度区分;                        
+                    ";
+                var p = context.Database.SqlQueryRaw<Pipeline>(
+                                    sql,
+                                    this.SelectedEmployee.Code,
+                                    this.SelectedYear * 100 + this.SelectedMonth,
+                                    this.ProgressLevelMin.Level,
+                                    this.ProgressLevelMax.Level
+                                ).ToList();
+                if (p == null)
+                {
+                    return;
+                }
+                else
+                {
+                    this.Pipelines = new ObservableCollection<Pipeline>(p.OrderBy(p => p.Level));
                     ;
                 }
 

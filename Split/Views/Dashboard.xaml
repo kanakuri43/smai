@@ -6,6 +6,11 @@
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              prism:ViewModelLocator.AutoWireViewModel="True">
+    <UserControl.Resources>
+        <Style x:Key="HiddenHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+    </UserControl.Resources>
     <Grid Margin="8" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
@@ -17,8 +22,8 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition />
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0"
                             Margin="0,0,0,0"
@@ -84,7 +89,9 @@
                 </i:Interaction.Triggers>
             </ListBox>
 
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="3"
+                  VerticalAlignment="Top"
+>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition/>
@@ -116,18 +123,51 @@
 
             </Grid>
 
+            <ListView Grid.Row="4" 
+                      Margin="0,10,0,10"
+                      ItemsSource="{Binding Pipelines}" >
+
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource HiddenHeaderStyle}">
+                        <GridViewColumn Header="確度" Width="40">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="件数" Width="40">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding CaseCount, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="達成率" Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Controls:MetroProgressBar Value="{Binding Percentage, Mode=OneWay}"
+                                                               Maximum="100"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+
         </Grid>
         <Grid Grid.Column="1"
               Margin="30,0,0,0">
+            
             <Grid.RowDefinitions>
                 <RowDefinition Height="230"/>
                 <RowDefinition Height="230"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
+
             <Grid Grid.Row="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
@@ -159,50 +199,50 @@
                                        TextAlignment="Right"
                                        Text="{Binding CurrentSalesTarget ,StringFormat={}{0:N0}}"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" 
+                <TextBlock Grid.Row="2" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="受注済"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="1" 
+                <TextBlock Grid.Row="2" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestTotals[0].FinishedSales ,StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="3" Grid.Column="2" 
+                <TextBlock Grid.Row="2" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding SalesProgressRate ,StringFormat={}{0:N0} %}"/>
-                <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="2" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding SalesProgressRate}" />
-                <TextBlock Grid.Row="3" Grid.Column="3" 
+                <TextBlock Grid.Row="2" Grid.Column="3" 
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            Foreground="White"
                            Visibility="{Binding IsSalesCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
                            Text="Complete"/>
 
-                <TextBlock Grid.Row="4" Grid.Column="0" 
+                <TextBlock Grid.Row="3" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="受注予定"/>
-                <TextBlock Grid.Row="4" Grid.Column="1" 
+                <TextBlock Grid.Row="3" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestTotals[0].UnfinishedSales ,StringFormat={}{0:N0}}"/>
 
-                <TextBlock Grid.Row="5" Grid.Column="0" 
+                <TextBlock Grid.Row="4" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="合計"/>
-                <TextBlock Grid.Row="5" Grid.Column="1" 
+                <TextBlock Grid.Row="4" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestTotals[0].TotalSales ,StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="5" Grid.Column="2" 
+                <TextBlock Grid.Row="4" Grid.Column="2" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding SalesForecastProgressRate ,StringFormat={}{0:N0} %}"/>
-                <Controls:MetroProgressBar Grid.Row="5" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="4" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
@@ -245,49 +285,49 @@
                                     VerticalAlignment="Center"
                                     Text="{Binding CurrentProfitTarget, StringFormat={}{0:N0}}"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" 
+                <TextBlock Grid.Row="2" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="受注済"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" 
+                <TextBlock Grid.Row="2" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestTotals[0].FinishedProfit ,StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="3" Grid.Column="2" 
+                <TextBlock Grid.Row="2" Grid.Column="2" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"
                                     Text="{Binding ProfitProgressRate, StringFormat={}{0:N0} %}"/>
-                <Controls:MetroProgressBar Grid.Row="3" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="2" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
                                                        Value="{Binding ProfitProgressRate}" />
-                <TextBlock Grid.Row="3" Grid.Column="3"             
+                <TextBlock Grid.Row="2" Grid.Column="3"             
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"
                            Foreground="White"
                            Visibility="{Binding IsProfitCompleted, Converter={StaticResource BooleanToVisibilityConverter}}"
                            Text="Complete"/>
 
-                <TextBlock Grid.Row="4" Grid.Column="0" 
+                <TextBlock Grid.Row="3" Grid.Column="0" 
                             VerticalAlignment="Center"
                             Text="受注予定"/>
-                <TextBlock Grid.Row="4" Grid.Column="1" 
+                <TextBlock Grid.Row="3" Grid.Column="1" 
                             VerticalAlignment="Center"
                             TextAlignment="Right"
                             Text="{Binding LatestTotals[0].UnfinishedProfit ,StringFormat={}{0:N0}}"/>
 
-                <TextBlock Grid.Row="5" Grid.Column="0" 
+                <TextBlock Grid.Row="4" Grid.Column="0" 
                                        VerticalAlignment="Center"
                                        Text="合計"/>
-                <TextBlock Grid.Row="5" Grid.Column="1" 
+                <TextBlock Grid.Row="4" Grid.Column="1" 
                                        VerticalAlignment="Center"
                                        TextAlignment="Right"
                                        Text="{Binding LatestTotals[0].TotalProfit ,StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="5" Grid.Column="2" 
+                <TextBlock Grid.Row="4" Grid.Column="2" 
                                     TextAlignment="Right"
                                     VerticalAlignment="Center"
                                     Text="{Binding ProfitForecastProgressRate, StringFormat={}{0:N0} %}"/>
-                <Controls:MetroProgressBar Grid.Row="5" Grid.Column="3"
+                <Controls:MetroProgressBar Grid.Row="4" Grid.Column="3"
                                                        Margin="2"
                                                        Background="LightGray"
                                                        Minimum="0" Maximum="100"
@@ -301,51 +341,6 @@
                     <RowDefinition Height="30"/>
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Border Grid.Row="0" Grid.Column="0"
-                        BorderBrush="Silver"
-                        BorderThickness="4,0,0,0"/>
-                <TextBlock Grid.Row="0" Grid.Column="0" 
-                                       VerticalAlignment="Center"
-                                       Margin="10,0,0,0"
-                                       FontWeight="Bold"
-                                       FontSize="16"
-                                       Text="パイプライン"/>
-                <ListView Grid.Row="1" 
-                      Margin="0,10,0,10"
-                      ItemsSource="{Binding CustomersHistories}" >
-
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="確度" Width="80">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding OrderYearMonth}" HorizontalAlignment="Right" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="件数" Width="80">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                            <GridViewColumn Header="達成率" Width="80">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Controls:MetroProgressBar Value="{Binding ProfitProgressRate, Mode=OneWay}"
-                                                               Maximum="100"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </ListView>
 
             </Grid>
 
@@ -365,8 +360,50 @@
                        VerticalAlignment="Center"
                        FontWeight="Bold"
                        FontSize="16"
-                       Text="受注予定案件"/>
+                       Text="今月受注予定"/>
             <ListView Grid.Row="1" 
+                      Margin="0,10,0,30"
+                      ItemsSource="{Binding CasesByIndividual}" >
+
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="確度" DisplayMemberBinding="{Binding Symbol}" Width="35"/>
+                        <GridViewColumn Header="顧客" DisplayMemberBinding="{Binding CustomerName}" Width="170"/>
+                        <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="170"/>
+                        <GridViewColumn Header="売上" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="粗利" Width="80">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListView>
+
+
+            <Border Grid.Row="2" 
+                        BorderBrush="Silver"
+                        BorderThickness="4,0,0,0"/>
+            <TextBlock Grid.Row="2"
+                       Margin="10,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       Text="whole company"/>
+            <ListView Grid.Row="3" 
                       Margin="0,10,0,10"
                       ItemsSource="{Binding Cases}" >
 
@@ -397,53 +434,6 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ListView>
-            
-            <Border Grid.Row="2" 
-                        BorderBrush="Silver"
-                        BorderThickness="4,0,0,0"/>
-            <TextBlock Grid.Row="2"
-                       Margin="10,0,0,0"
-                       VerticalAlignment="Center"
-                       FontWeight="Bold"
-                       FontSize="16"
-                       Text="得意先履歴"/>
-            <ListView Grid.Row="3" 
-                      Margin="0,10,0,10"
-                      ItemsSource="{Binding CustomersHistories}" >
-
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="日付" Width="80">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding OrderYearMonth}" HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="案件" DisplayMemberBinding="{Binding CaseName}" Width="200"/>
-                        <GridViewColumn Header="売上" Width="80">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding SalesPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="粗利" Width="80">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding ProfitPrice, StringFormat={}{0:#,0}}" HorizontalAlignment="Right" />
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <prism:InvokeCommandAction Command="{Binding OrderDoubleClickCommand}"/>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </ListView>
-
         </Grid>
 
     </Grid>
