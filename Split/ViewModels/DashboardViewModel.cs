@@ -252,10 +252,10 @@ namespace Split.ViewModels
             // 社員リスト 部署変更時に再度呼び出すので関数化
             FetchEmployeeList();
 
-            ScreenUpdate();
+            UpdateScreen();
         }
 
-        private void ScreenUpdate()
+        private void UpdateScreen()
         {
             // 社員未選択なら即return
             if (this.SelectedEmployee == null)
@@ -500,11 +500,11 @@ namespace Split.ViewModels
 
         private void YearSelectionChangedExecute()
         {
-            ScreenUpdate();
+            UpdateScreen();
         }
         private void MonthSelectionChangedExecute()
         {
-            ScreenUpdate();
+            UpdateScreen();
         }
         private void SectionSelectionChangedExecute()
         {
@@ -512,7 +512,7 @@ namespace Split.ViewModels
         }
         private void EmployeeSelectionChangedExecute()
         {
-            ScreenUpdate();
+            UpdateScreen();
         }
         private void SelectedProgressLevelChangedExecute()
         {
@@ -530,7 +530,7 @@ namespace Split.ViewModels
                 ProgressLevelMin = null; // 範囲外の場合はnullを設定
             }
 
-            ScreenUpdate();
+            UpdateScreen();
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext)

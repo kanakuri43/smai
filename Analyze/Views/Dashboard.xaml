@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:prism="http://prismlibrary.com/"             
+             xmlns:prism="http://prismlibrary.com/"      
+             xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              prism:ViewModelLocator.AutoWireViewModel="True">
@@ -70,6 +71,7 @@
             </ComboBox>
 
             <ListBox Grid.Row="2"
+                      Visibility="Hidden"
                      ItemsSource="{Binding Employees}"
                      SelectedValuePath="Code"
                      SelectedValue="{Binding SelectedEmployeeCode}"
@@ -174,7 +176,11 @@
                        VerticalAlignment="Center"
                        FontWeight="Bold"
                        FontSize="16"
-                       Text="10年推移"/>
+                       Text="売上構成比"/>
+                <oxy:PlotView Grid.Row="1" 
+                              Margin="20"
+                              Model="{Binding PieChartModel}"
+                              Background="White"/>
 
             </Grid>
         </Grid>
